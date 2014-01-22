@@ -1,0 +1,204 @@
+@import 'vars';
+
+//defaults
+body{
+	width: $body_width;
+	color: $default_font_color;
+	font-family: $default_font;
+	font-size: $default_font_size;
+	font-weight: 300;
+	margin: 0px auto;
+}
+
+
+//links
+a, a:visited{ 
+	color: $default_font_color; 
+	text-decoration: none;
+}
+
+p{
+	a {
+		text-decoration: underline;
+	}
+
+	a:hover{
+		color: $link_hover_color;
+	}
+}
+
+h1{ 
+	font-weight: 200;
+	font-size: $title_size;
+}
+
+h2{
+	@extend h1;
+	text-align: center;
+	font-size: $title_size - 2pt;
+}
+
+//buttons
+button, input[type="submit"]{
+	padding: 5px 8px;
+	background-color: $light;
+	color: $dark;
+	border-radius: 2px;
+	border: 1px solid $dark;
+	font-family: $default_font;
+	outline: none;
+}
+
+button:hover, input[type="submit"]:hover{
+	background-color: $dark;
+	color: $light;
+	cursor: pointer;
+}
+
+//header
+header{
+	margin-bottom: 0px;
+	margin-top: 30px;
+	padding-bottom: 0px;
+	position: relative;
+	#description{
+		position: absolute;
+		top: 10px;
+		left: 300px;
+		font-size: $default_font_size - 2pt;
+	}
+}
+
+//menu
+nav.menu{
+
+	margin-top: -10px;
+	
+	border-bottom: 1px solid $dark;
+
+	ul {
+	    margin: 0;
+	    padding: 0;
+	    list-style: none;
+	   }
+
+  	li { display: inline-block; }
+  	li:hover{
+		background-color: $dark;
+	}
+
+	a {
+	   display: block;
+	   padding: 5px 8px;
+	   border-radius: 2px;
+	   text-decoration: none;
+	}
+
+	a:hover{
+		color: $light;
+	}
+}
+
+//banner image
+#banner{
+	width: 100%;
+}
+
+//content
+.content{
+	padding: 20px 0px;
+}
+
+//admin page stuffs
+form{
+
+	position: relative;
+	width: 80%;
+	border-bottom: 1px solid $dark;
+	padding-bottom: 40px;
+	margin: auto;
+	fieldset{
+		border: 0px;
+		
+	}
+
+	#form-load-post{
+		position: absolute;
+		top: 15px;
+	}
+
+	#form-delete{
+		position: absolute; left: 710px; top: 40px;
+	}
+
+	p{text-align: center;}
+
+	label{
+		display: block;
+		padding-bottom: 8px;
+	}
+
+	input[type="text"]{	
+		width: 100%;
+		display: block;
+		float: left;
+		height: 20px;
+	}
+
+	textarea{
+		width: 100%;
+		height: 150px;
+		resize: vertical; 
+	}
+
+	select{
+		margin-left: 5px;
+		width: 80px;
+	}
+
+	fieldset.label-side{
+		display: block;
+		float: left;
+
+		label {
+			display: inline-block;
+		}
+	}
+
+	#image-upload-container{
+		width: 400px;
+		margin: 0px;
+		padding: 20px 0px;
+	}
+
+	input[type="submit"]{
+		font-size: $default_font_size;
+		margin: auto;
+		display: block;
+	}
+
+}
+
+//footer
+footer{
+	width: 100%;
+	padding-bottom: 40px;
+	border-top: 1px solid $dark;
+	font-size: $footer_font_size;
+	font-style: italic;
+	a, a:visited {
+		color: $link_hover_color;
+		text-decoration: none;
+	}
+	a:hover{
+		text-decoration: underline;
+	}
+	#copyright{
+		color: $copyright_font_color;
+		font-size: $footer_font_size - 2pt;
+	}
+	img{
+		width: 100px;
+		float: right;
+	}
+}
