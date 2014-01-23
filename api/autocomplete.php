@@ -1,11 +1,15 @@
 <?php
 
-$get_array = Database::clean($_GET); //clean the $_GET array
-if(isset($get_array['table']) &&
-   isset($get_array['column_name'] &&)
-   isset($get_array['chars']){
+require_once '../includes/config.php';
+require_once '../includes/classes/class.Autocomplete.php';
+require_once '../includes/classes/class.Database.inc.php';
 
-   	Database::init_connection($HOSTNAME, $DATABASE, $get_array['table'], $DATABASE_USER, $DATABASE_PASSWORD);
+if(isset($_GET['table']) &&
+   isset($_GET['column_name']) &&
+   isset($_GET['chars'])){
+
+	Database::init_connection('localhost', $DATABASE, $_GET['table'], $DATABASE_USER, $DATABASE_PASSWORD);
+	$get_array = Database::clean($_GET); //clean the $_GET array
    	$autocomplete = new Autocomplete($get_array['column_name'], $get_array['table']);
    	$results_obj = $autocomplete->get_results_as_JSON($get_array['chars']);
    	echo $results_obj;

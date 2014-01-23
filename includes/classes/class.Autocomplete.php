@@ -24,10 +24,15 @@ class Autocomplete {
 	public function get_results_as_JSON($chars){
 		$query = "SELECT $this->column_name FROM " . $this->table . " WHERE $this->column_name LIKE '" . $chars . "%' ORDER BY $this->column_name";
 		//if there are results for the current characters requested
-		if($matching_strings = Database::get_results_as_numerical_array($query, $this->table)){
-			$obj = new stdClass();
-			$obj->data = $matching_strings;
-			return json_encode($obj);
+		$data = array();
+		if($matching_strings = Database::get_results_as_numerical_array($query, $this->column_name)){
+			foreach($matching_strings as $matching_string){
+				$json = array();
+				$json['name'] = $matching_string;
+				$json['value'] = $matching_string;
+				$data[] = $json;
+			}
+			return json_encode($data);
 		}else return "{ \"error\" : \"no results found\"}";
 	}
 
@@ -36,13 +41,24 @@ class Autocomplete {
 	public function add_list_to_table($list){
 		$query = "SELECT $this->column_name FROM " . $this->table;
 		$list = commas_to_array($list);
+		$just_added = array();
 		if($old_list = Database::get_results_as_numerical_array($query, $this->column_name)){
+			//var_dump($old_list); echo "<br>";
+			
 			foreach($list as $list_item){
-				if(!in_array($list_item, $old_list)) $this->add_to_table($list_item);
+				
+				if(!in_array($list_item, $old_list) &&
+				   !in_array($list_item, $just_added)){
+					$this->add_to_table($list_item);
+					$just_added[] = $list_item;
+				}
 			}
 		}else{ //if there is nothing in the organizations table
 			foreach($list as $list_item){
-				$this->add_to_table($list_item);
+				if(!in_array($list_item, $just_added)){
+					$this->add_to_table($list_item);
+					$just_added[] = $list_item;
+				}	
 			}
 		}
 	}

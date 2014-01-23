@@ -89,6 +89,22 @@ class Database {
 		}else echo " MYSQL QUERY FAILED";
 	}
 
+	//takes a MySQL query and returns a 1D indexd array of results.
+	//i.e. it can only be used with SELECT statement that returns results of only one column
+	//returns array on success and false on failure.
+	//called from add_list_to_organization_table() and get_results_as_JSON()
+	public static function get_results_as_numerical_array($query, $column_name){
+		if($results = self::get_all_results($query)){
+			if(!isset($results[0])) $results = array($results); //wraps in array if $result is 1D
+			$numerical_array = array();
+			foreach($results as $result_row){
+				//var_dump($result_row);
+				$numerical_array[] = $result_row[$column_name];
+			}
+			return $numerical_array;
+		}else return false;
+	}
+
 	//returns string or assosciative array of strings
 	//mainly for $_POST and $_GET
 	public static function clean($string){

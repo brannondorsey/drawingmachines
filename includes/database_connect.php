@@ -19,7 +19,7 @@
 	  				source_line_2";
 
 	  	//setup the API
-	  	$api = new API($HOSTNAME, 
+	  	$api = new API("localhost", 
 	  				   $DATABASE, 
 	  				   "machines", 
 	  				   $DATABASE_USER, 

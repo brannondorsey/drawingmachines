@@ -1,7 +1,10 @@
 <?php 
 	
-	//class includes
+	//class and helper includes
 	require_once 'includes/classes/class.FormValidator.php';
+	require_once 'includes/classes/class.Autocomplete.php';
+	require_once 'includes/helpers.php';
+
 
 	//content includes
 	require_once 'includes/header.php';
@@ -13,58 +16,95 @@
 
 		$post = Database::clean($_POST);
 
-		$rules = array(
+		//if the post is from a machine post
+		if(isset($post['device_name'])){
+			$rules = array(
 
-	        'device_name'=>array('display'=>'Name of Device', 'type'=>'string',  'required'=>true, 'min'=>2, 'max'=>50, 'trim'=>true),
-	        'inventor'=>array('display'=>'Inventor', 'type'=>'string',  'required'=>true, 'min'=>2, 'max'=>50, 'trim'=>true),
-	        'inventor_line_2'=>array('display'=>'Inventor line 2', 'type'=>'string',  'required'=>false, 'min'=>5, 'max'=>50, 'trim'=>true),
-	        'year'=>array('display'=>'Year', 'type'=>'numeric',  'required'=>true, 'min'=>1, 'max'=>9999, 'trim'=>true),
-	        'primary_category'=>array('display'=>'Primary Category', 'type'=>'string',  'required'=>true, 'min'=>6, 'max'=>50, 'trim'=>true),
-	        'secondary_category'=>array('display'=>'Secondary Category', 'type'=>'string','required'=>false, 'min'=>6, 'max'=>50, 'trim'=>true),
-	        'post_content'=>array('display'=>'Post Content', 'type'=>'string', 'min'=>1, 'max'=>999999, 'required'=>true, 'trim'=>true),
-	        'tags'=>array('display'=>'tags', 'type'=>'string',  'required'=>true, 'min'=>2, 'max'=>255, 'trim'=>true),
-	        'source'=>array('display'=>'Source', 'type'=>'string',  'required'=>false, 'min'=>2, 'max'=>255, 'trim'=>true),
-	        'source_line_2'=>array('display'=>'Source line 2', 'type'=>'string', 'required'=>true, 'min'=>1, 'max'=>255, 'trim'=>true)
-    	);
+		        'device_name'=>array('display'=>'Name of Device', 'type'=>'string',  'required'=>true, 'min'=>2, 'max'=>50, 'trim'=>true),
+		        'inventor'=>array('display'=>'Inventor', 'type'=>'string',  'required'=>true, 'min'=>2, 'max'=>50, 'trim'=>true),
+		        'inventor_line_2'=>array('display'=>'Inventor line 2', 'type'=>'string',  'required'=>false, 'min'=>5, 'max'=>50, 'trim'=>true),
+		        'year'=>array('display'=>'Year', 'type'=>'numeric',  'required'=>true, 'min'=>1, 'max'=>9999, 'trim'=>true),
+		        'primary_category'=>array('display'=>'Primary Category', 'type'=>'string',  'required'=>true, 'min'=>6, 'max'=>50, 'trim'=>true),
+		        'secondary_category'=>array('display'=>'Secondary Category', 'type'=>'string','required'=>false, 'min'=>6, 'max'=>50, 'trim'=>true),
+		        'post_content'=>array('display'=>'Post Content', 'type'=>'string', 'min'=>1, 'max'=>999999, 'required'=>true, 'trim'=>true),
+		        'tags'=>array('display'=>'tags', 'type'=>'string',  'required'=>true, 'min'=>2, 'max'=>255, 'trim'=>true),
+		        'source'=>array('display'=>'Source', 'type'=>'string',  'required'=>false, 'min'=>2, 'max'=>255, 'trim'=>true),
+		        'source_line_2'=>array('display'=>'Source line 2', 'type'=>'string', 'required'=>true, 'min'=>1, 'max'=>255, 'trim'=>true)
+	    	);
+		}
+
+		//if post is from a new categories
+		if(isset($post['add_categories'])){
+			$rules = array(
+				'add_categories' => array('display' => 'Add Categories', 'type'=>'string',  'required'=>false, 'min'=>2, 'max'=>99999, 'trim'=>true),
+				'delete_categories' => array('display' => 'Remove Categories', 'type'=>'string',  'required'=>false, 'min'=>2, 'max'=>99999, 'trim'=>true)
+			);
+		}
 		
 		$validator = new FormValidator();
 		$validator->addSource($post);
 		$validator->addRules($rules);
 		$validator->run();
 
+		//var_dump($post);
+
 		//if form validation fails
 		if(sizeof($validator->errors) > 0) {
 			var_dump($validator->errors);
-
+			
+		}else{ //form meets validation rules
+			
 			//add new tags to database
-			if($isset($post_array['tags'])){
+			if(isset($post['tags'])){
 				
 				$autocomplete = new Autocomplete('tag', 'tags');
-		        $autocomplete->add_list_to_table($post_array['tags']);
+		        $autocomplete->add_list_to_table($post['tags']);
 			}
 
 			//add new categories to database
-			if($isset($post_array['add_categories'])){
-				
+			if(isset($post['add_categories'])){
+		
 				$autocomplete = new Autocomplete('category', 'categories');
-		        $autocomplete->add_list_to_table($post_array['add_categories']);
+		        $autocomplete->add_list_to_table($post['add_categories']);
 			}
-			
-		}else{ //form meets validation rules
 
-			if(Database::execute_from_assoc($post, Database::$table)){
-				//results saved...
-				echo "results saved!";
+			//add post content to database
+			if(isset($post['device_name'])){
+				if(Database::execute_from_assoc($post, Database::$table)){
+					//results saved...
+					echo "results saved!";
+				}
 			}
 		}
 	}
 ?>
 
-
+<link rel="stylesheet" type="text/css" href="styles/autosuggest.css">
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js" ></script>
+<script type="text/javascript" src="scripts/jquery.autosuggest.minified.js"></script>
 <script>
+	var hostname = <?php echo '"' . $HOSTNAME . '"'; ?>;
+	$(document).ready(function(){
+
+		var props = { 
+			queryParam: "chars",
+			extraParams: "&column_name=category&table=categories",
+			startText: "",
+			resultsHighlight: false,
+			retrieveComplete: function(data){
+				return data;
+			}
+		};
+
+		//?column_name=tag&table=tags
+		//?column_name=category&table=categories
+		$('input[name="tags"]').autoSuggest(hostname + "/api/autocomplete.php", props);
+		$('input[name="add_categories"]').autoSuggest(hostname + "/api/autocomplete.php", props);
+		
+	});
 
 	function addImage(){
+
 		var imageFieldset = $('.image-upload').last();
 		var imageUploadContainer = $('#image-upload-container');
 		var imageNumber = imageUploadContainer.children().length;
@@ -129,7 +169,7 @@
 			<textarea id="form-post-content" name="post_content"></textarea>
 		</fieldset>
 
-		<fieldset >
+		<fieldset>
 			<label for="form-tags">Tags (seperated by commas)</label>
 			<input id="form-tags" type="text" name="tags">
 		</fieldset>
@@ -164,7 +204,7 @@
 
 		<fieldset class="half">
 			<label for="form-new-category">Add Categories</label>
-			<input id="form-new-category"type="text" name="add_categories">
+			<input id="form-new-category"type="text" name="add_categories" autocomplete="off">
 		</fieldset>
 
 		<fieldset class="half">
