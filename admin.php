@@ -17,29 +17,34 @@
 
 		$post = Database::clean($_POST);
 
+		$rules = array();
 		//if the post is from a machine post
 		if(isset($post['device_name'])){
-			$rules = array(
+			
 
-		        'device_name'=>array('display'=>'Name of Device', 'type'=>'string',  'required'=> true, 'min'=>2, 'max'=>50, 'trim'=>true),
-		        'inventor'=>array('display'=>'Inventor', 'type'=>'string',  'required'=> true, 'min'=>2, 'max'=>50, 'trim'=>true),
-		        'inventor_line_2'=>array('display'=>'Inventor line 2', 'type'=>'string',  'required'=> false, 'min'=>2, 'max'=>50, 'trim'=>true),
-		        'year'=>array('display'=>'Year', 'type'=>'numeric',  'required'=> true, 'min'=>1, 'max'=>9999, 'trim'=>true),
-		        'primary_category'=>array('display'=>'Primary Category', 'type'=>'string',  'required'=> true, 'min'=>2, 'max'=>50, 'trim'=>true),
-		        'secondary_category'=>array('display'=>'Secondary Category', 'type'=>'string','required'=> false, 'min'=>2, 'max'=>50, 'trim'=>true),
-		        'post_content'=>array('display'=>'Post Content', 'type'=>'string', 'min'=>1, 'max'=>999999, 'required'=> true, 'trim'=>true),
-		        'tags'=>array('display'=>'tags', 'type'=>'string',  'required'=> true, 'min'=>2, 'max'=>255, 'trim'=>true),
-		        'source'=>array('display'=>'Source', 'type'=>'string',  'required'=> false, 'min'=>2, 'max'=>255, 'trim'=>true),
-		        'source_line_2'=>array('display'=>'Source line 2', 'type'=>'string', 'required'=> true, 'min'=>1, 'max'=>255, 'trim'=>true)
+		      	$rules['device_name'] = array('display'=>'Name of Device', 'type'=>'string',  'required'=> true, 'min'=>2, 'max'=>50, 'trim'=>true);
+		        $rules['inventor'] = array('display'=>'Inventor', 'type'=>'string',  'required'=> true, 'min'=>2, 'max'=>50, 'trim'=>true);
+		        $rules['inventor_line_2'] = array('display'=>'Inventor line 2', 'type'=>'string',  'required'=> false, 'min'=>2, 'max'=>50, 'trim'=>true);
+		        $rules['year'] = array('display'=>'Year', 'type'=>'numeric',  'required'=> true, 'min'=>1, 'max'=>9999, 'trim'=>true);
+		        $rules['primary_category'] = array('display'=>'Primary Category', 'type'=>'string',  'required'=> true, 'min'=>2, 'max'=>50, 'trim'=>true);
+		        $rules['secondary_category'] = array('display'=>'Secondary Category', 'type'=>'string','required'=> false, 'min'=>2, 'max'=>50, 'trim'=>true);
+		        $rules['post_content'] = array('display'=>'Post Content', 'type'=>'string', 'min'=>1, 'max'=>999999, 'required'=> true, 'trim'=>true);
+		        $rules['tags'] = array('display'=>'tags', 'type'=>'string',  'required'=> true, 'min'=>2, 'max'=>255, 'trim'=>true);
+		        $rules['source'] = array('display'=>'Source', 'type'=>'string',  'required'=> false, 'min'=>2, 'max'=>255, 'trim'=>true);
+		        $rules['source_line_2'] = array('display'=>'Source line 2', 'type'=>'string', 'required'=> true, 'min'=>1, 'max'=>255, 'trim'=>true);
 	    	);
 		}
 
 		//if post is from a new categories
-		if(isset($post['add_categories'])){
-			$rules = array(
-				'add_categories' => array('display' => 'Add Categories', 'type'=>'string',  'required'=>false, 'min'=>2, 'max'=>99999, 'trim'=>true),
-				'delete_categories' => array('display' => 'Remove Categories', 'type'=>'string',  'required'=>false, 'min'=>2, 'max'=>99999, 'trim'=>true)
-			);
+		if(isset($post['add_categories']) &&
+		   !empty($post['add_categories'])){
+			$rules['add_categories'] = array('display' => 'Add Categories', 'type'=>'string',  'required'=>false, 'min'=>2, 'max'=>99999, 'trim'=>true);
+		}
+
+		//if post is to remove a new categories
+		if(isset($post['add_categories']) &&
+		   !empty($post['add_categories'])){
+			$rules['delete_categories'] = array('display' => 'Remove Categories', 'type'=>'string',  'required'=>false, 'min'=>2, 'max'=>99999, 'trim'=>true);
 		}
 		
 		$validator = new FormValidator();
@@ -61,7 +66,7 @@
 
 			//add new categories to database
 			if(isset($post['add_categories'])){
-		
+
 				$autocomplete = new Autocomplete('category', 'categories');
 		        $autocomplete->add_list_to_table($post['add_categories']);
 			}
@@ -83,6 +88,8 @@
 <script type="text/javascript" src="scripts/jquery.autosuggest.minified.js"></script>
 <script>
 	var hostname = <?php echo '"' . $HOSTNAME . '"'; ?>;
+	var tagsPreFill = <?php echo isset($post['tags']) ? '"' . $post['tags'] . '"' : '""'; ?>;
+
 	$(document).ready(function(){
 
 		//tags autosuggest
@@ -92,6 +99,7 @@
 				queryParam: "chars",
 				extraParams: "&column_name=tag&table=tags",
 				startText: "",
+				preFill: tagsPreFill,
 				resultsHighlight: false,
 				retrieveComplete: function(data){
 					return data;
@@ -138,6 +146,11 @@
 		imageNumber++;
 		var html = '<fieldset><input id="image-' + imageNumber + '" type="file" name="image-' + imageNumber + '"></fieldset>';
 		$('#image-upload-container').append(html);
+	}
+
+	//called onSubmit when categories fi
+	function swapVals(){
+
 	}
 
 </script>
@@ -212,7 +225,7 @@
 
 		<fieldset>
 			<label for="form-tags">Tags (seperated by commas) <?php if(isset($validator->errors['tags'])) echo "<spand class='error'>*</span>"; ?></label>
-			<input id="form-tags" type="text" name="tags" value="<?php if(isset($post['tags'])) echo $post['tags']?>">
+			<input id="form-tags" type="text" name="tags">
 		</fieldset>
 
 		<fieldset>
@@ -237,7 +250,7 @@
 
 	</form>
 
-	<form method="post" target="" id="manage-categories">
+	<form method="post" target="" id="manage-categories" onsubmit="swapVals()">
 
 		<h2>Manage Categories</h2>
 
