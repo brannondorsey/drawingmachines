@@ -81,7 +81,7 @@ class FormValidator{
         {
             if($opt['required'] == true)
             {
-                $this->is_set($var);
+                $this->is_set($var, $opt['display']);
             }
 
             /*** Trim whitespace from beginning and end of variable ***/
@@ -208,11 +208,12 @@ class FormValidator{
      * @param string $var The POST variable to check
      *
      */
-    private function is_set($var)
+    private function is_set($var, $display)
     {
-        if(!isset($this->source[$var]))
+        if(!isset($this->source[$var]) ||
+            empty($this->source[$var]))
         {
-            $this->errors[$var] = $var . ' is not set';
+            $this->errors[$var] = $display . ' is not set';
         }
     }
 
@@ -309,7 +310,8 @@ class FormValidator{
             return true;
         }
 
-        if(isset($this->source[$var]))
+        if(isset($this->source[$var]) &&
+           !empty($this->source[$var]))
         {
             if(strlen($this->source[$var]) < $min)
             {

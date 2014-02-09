@@ -110,6 +110,8 @@ nav.menu{
 }
 
 //admin page stuffs
+//----------------------------------------------------------------
+
 form{
 
 	position: relative;
@@ -117,18 +119,18 @@ form{
 	border-bottom: 1px solid $dark;
 	padding-bottom: 40px;
 	margin: auto;
+
 	fieldset{
 		border: 0px;
-		
 	}
 
 	#form-load-post{
 		position: absolute;
-		top: 15px;
+		padding-bottom: 50px;
 	}
 
 	#form-delete{
-		position: absolute; left: 710px; top: 40px;
+		position: absolute; left: 710px; top: 5px;
 	}
 
 	p{text-align: center;}
@@ -178,6 +180,16 @@ form{
 	}
 
 }
+
+.error{
+	color: $error_color;
+}
+
+.success{
+	color: $success_color;
+}
+
+//----------------------------------------------------------------
 
 //footer
 footer{

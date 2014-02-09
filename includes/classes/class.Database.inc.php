@@ -70,6 +70,7 @@ class Database {
 			echo "incorrect parameters passed to InsertUpdate::execute_from_assoc()";
 		 	return false;
 		}
+		
 		return self::execute_sql($query);
 	}
 	

@@ -83,11 +83,11 @@ form {
     border: 0px; }
   form #form-load-post {
     position: absolute;
-    top: 15px; }
+    padding-bottom: 50px; }
   form #form-delete {
     position: absolute;
     left: 710px;
-    top: 40px; }
+    top: 5px; }
   form p {
     text-align: center; }
   form label {
@@ -118,6 +118,12 @@ form {
     font-size: 12pt;
     margin: auto;
     display: block; }
+
+.error {
+  color: #c40a0a; }
+
+.success {
+  color: #0ac439; }
 
 footer {
   width: 100%;
