@@ -23,7 +23,7 @@ h2 {
   text-align: center;
   font-size: 18pt; }
 
-button, input[type="submit"] {
+button, input[type="submit"], input[type="button"] {
   padding: 5px 8px;
   background-color: white;
   color: black;
@@ -32,7 +32,7 @@ button, input[type="submit"] {
   font-family: "Helvetica Neue", Helvetica, sans-serif;
   outline: none; }
 
-button:hover, input[type="submit"]:hover {
+button:hover, input[type="submit"]:hover, input[type="button"]:hover {
   background-color: black;
   color: white;
   cursor: pointer; }

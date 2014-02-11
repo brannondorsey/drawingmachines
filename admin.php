@@ -16,11 +16,10 @@
 	   !empty($_POST)){
 
 		$post = Database::clean($_POST);
-
+		
 		$rules = array();
 		//if the post is from a machine post
 		if(isset($post['device_name'])){
-			
 
 		      	$rules['device_name'] = array('display'=>'Name of Device', 'type'=>'string',  'required'=> true, 'min'=>2, 'max'=>50, 'trim'=>true);
 		        $rules['inventor'] = array('display'=>'Inventor', 'type'=>'string',  'required'=> true, 'min'=>2, 'max'=>50, 'trim'=>true);
@@ -32,7 +31,6 @@
 		        $rules['tags'] = array('display'=>'tags', 'type'=>'string',  'required'=> true, 'min'=>2, 'max'=>255, 'trim'=>true);
 		        $rules['source'] = array('display'=>'Source', 'type'=>'string',  'required'=> false, 'min'=>2, 'max'=>255, 'trim'=>true);
 		        $rules['source_line_2'] = array('display'=>'Source line 2', 'type'=>'string', 'required'=> true, 'min'=>1, 'max'=>255, 'trim'=>true);
-	    	);
 		}
 
 		//if post is from a new categories
@@ -42,8 +40,8 @@
 		}
 
 		//if post is to remove a new categories
-		if(isset($post['add_categories']) &&
-		   !empty($post['add_categories'])){
+		if(isset($post['delete_categories']) &&
+		   !empty($post['delete_categories'])){
 			$rules['delete_categories'] = array('display' => 'Remove Categories', 'type'=>'string',  'required'=>false, 'min'=>2, 'max'=>99999, 'trim'=>true);
 		}
 		
@@ -52,34 +50,74 @@
 		$validator->addRules($rules);
 		$validator->run();
 
-		//var_dump($post);
-
 		//if form validation fails
 		if(sizeof($validator->errors) <= 0){ //form meets validation rules
 			
 			//add new tags to database
 			if(isset($post['tags'])){
-				
 				$autocomplete = new Autocomplete('tag', 'tags');
-		        $autocomplete->add_list_to_table($post['tags']);
+		        $autocomplete->add_list_to_table($tags);
 			}
 
 			//add new categories to database
 			if(isset($post['add_categories'])){
-
 				$autocomplete = new Autocomplete('category', 'categories');
-		        $autocomplete->add_list_to_table($post['add_categories']);
+		        $autocomplete->add_list_to_table($categories);
+		        $categories_saved = true;
+			}
+
+			//add new categories to database
+			if(isset($post['delete_categories'])){
+				$autocomplete = new Autocomplete('category', 'categories');
+		        $autocomplete->add_list_to_table($categories);
+		        $categories_saved = true;
 			}
 
 			//add post content to database
 			if(isset($post['device_name'])){
-				
-				if($test = Database::execute_from_assoc($post, Database::$table)){
-					//results saved...
-					$post_saved = true;
+
+				//if this post was loaded instead of new
+				if(intval($post['id']) != 0){
+
+					$id = $post['id'];
+					unset($post['id']);
+					$query = "UPDATE " . Database::$table . " SET ";
+					foreach($post as $key => $value){
+						$query .= $key . "=\"" . $value . "\", ";
+					}
+					$query = rtrim($query, ", ");
+					$query .= " WHERE id=\"" . $id . "\"";
+					// echo $query;
+					
+					if(Database::execute_sql($query)){
+						//results saved...
+						$post_saved = true;
+					}
+				}else{ //if this is a new post
+
+					unset($post['id']);
+					if(Database::execute_from_assoc($post, Database::$table)){
+						//results saved...
+						$post_saved = true;
+					}
 				}
 			}
 		}
+	}
+
+	if(isset($_GET['post']) &&
+	   !empty($_GET['post'])){
+	
+	 	$api_array = array(
+	 		'id' => intval($_GET['post']),
+	 		'limit' => '1'
+		);
+
+	 	$results = json_decode($api->get_json_from_assoc($api_array));
+	 	
+	 	if(isset($results->data)){
+	 		$loaded_post_obj = $results->data[0];
+	 	}
 	}
 ?>
 
@@ -88,7 +126,9 @@
 <script type="text/javascript" src="scripts/jquery.autosuggest.minified.js"></script>
 <script>
 	var hostname = <?php echo '"' . $HOSTNAME . '"'; ?>;
-	var tagsPreFill = <?php echo isset($post['tags']) ? '"' . $post['tags'] . '"' : '""'; ?>;
+	var tagsPreFill = <?php if(isset($post['tags'])) echo '"' . $post['tags'] . '"';
+							else if(isset($loaded_post_obj)) echo  '"' . $loaded_post_obj->tags . '"';
+							else echo '""'; ?>;
 
 	$(document).ready(function(){
 
@@ -148,9 +188,16 @@
 		$('#image-upload-container').append(html);
 	}
 
-	//called onSubmit when categories fi
-	function swapVals(){
-
+	function loadPost(){
+		var val = $('#form-load-post #load-post').val();
+		if(val != ''){
+			var url = window.location.href;
+			var queryIndex = url.indexOf('?');
+			if(queryIndex != -1){
+				url = url.substring(0, queryIndex); //remove old get params	
+			}
+			window.location.href = url + '?post=' + val;
+		}else return false;
 	}
 
 </script>
@@ -165,15 +212,18 @@
 		if(isset($post_saved)){
 			echo "<p class='success' style='text-align:center'>Post Saved</p>";
 		}
+		if(isset($categories_saved)){
+			echo "<p class='success' style='text-align:center'>Categories Updated</p>";
+		}
 	?>
 
 	<h2>Machine Post</h2>
 
 	<form method="post" target="" id="form-load-post" style="border:none">
 		<fieldset id="form-load-post" class="label-side" >
-			<label for="form-load-post">Load Post #</label>
-			<input type="number" min="1" name="load_post" style="width: 70px; margin-right: 5px;">
-			<button onclick="return false;">Load</button>
+			<label for="load-post">Load Post #</label>
+			<input id="load-post" type="number" min="1" name="load_post" style="width: 70px; margin-right: 5px;">
+			<input type="button" value="Load" onclick="return loadPost();">
 		</fieldset>
 
 		<button id="form-delete" onclick="return false;">Delete</button>
@@ -181,46 +231,56 @@
 
 	<form method="post" target="" id="machine-post">
 
+		<input type="number" name="id" value="<?php echo isset($loaded_post_obj) ? $loaded_post_obj->id : "0" ; ?>" hidden>
+
 		<fieldset>
 			<label for="form-name">Name of Device <?php if(isset($validator->erros['device_name'])) echo "<spand class='error'>*</span>"; ?></label>
-			<input id="form-name"  type="text" name="device_name" data-id="0" value="<?php if(isset($post['device_name'])) echo $post['device_name']?>">
+			<input id="form-name"  type="text" name="device_name" data-id="0" value="<?php if(isset($post['device_name'])) echo $post['device_name']; else if(isset($loaded_post_obj)) echo $loaded_post_obj->device_name?>">
 		</fieldset>
 
 		<fieldset>
 			<label for="form-inventor">Inventor <?php if(isset($validator->errors['inventor'])) echo "<spand class='error'>*</span>"; ?></label>
-			<input id="form-inventor" type="text" name="inventor" value="<?php if(isset($post['inventor'])) echo $post['inventor']?>">
+			<input id="form-inventor" type="text" name="inventor" value="<?php if(isset($post['inventor'])) echo $post['inventor']; else if(isset($loaded_post_obj)) echo $loaded_post_obj->inventor?>">
 		</fieldset>
 
 		<fieldset>
 			<label for="form-inventor-2">Inventor line 2 (optional) <?php if(isset($validator->errors['inventor_line_2'])) echo "<spand class='error'>*</span>"; ?></label>
-			<input id="form-inventor-2" type="text" name="inventor_line_2" value="<?php if(isset($post['inventor_line_2'])) echo $post['inventor_line_2']?>">
+			<input id="form-inventor-2" type="text" name="inventor_line_2" value="<?php if(isset($post['inventor_line_2'])) echo $post['inventor_line_2']; else if(isset($loaded_post_obj)) echo $loaded_post_obj->inventor_line_2?>">
 		</fieldset>
 
 		<fieldset class="label-side">
 			<label for="form-circa">Circa <?php if(isset($validator->errors['circa'])) echo "<spand class='error'>*</span>"; ?></label>
-			<input id="form-circa" type="checkbox" name="circa" value="1" <?php if(isset($post['circa']) && $post['circa'] == '1') echo "checked"; ?> >
+			<input id="form-circa" type="checkbox" name="circa" value="1" <?php if(isset($post['circa']) && $post['circa'] == '1') echo "checked"; else if(isset($loaded_post_obj->circa) && $loaded_post_obj->circa == '1') echo "checked"?> >
 		
 			<label for="form-year">Year <?php if(isset($validator->errors['year'])) echo "<spand class='error'>*</span>"; ?></label>
-			<input id="form-year" type="number" min="1" max="9999" name="year" value="<?php if(isset($post['year'])) echo $post['year']?>">
+			<input id="form-year" type="number" min="1" max="9999" name="year" value="<?php if(isset($post['year'])) echo $post['year']; else if(isset($loaded_post_obj)) echo $loaded_post_obj->year?>">
 		</fieldset>
 
+		<?php 
+			$categories = json_decode(file_get_contents($HOSTNAME . "/api/autocomplete.php?column_name=category&table=categories&chars="));
+		?>
 		<fieldset class="label-side">
 			<label for="form-primary-category">Primary Category <?php if(isset($validator->errors['primary_category'])) echo "<spand class='error'>*</span>"; ?></label>
-			<select id="form-primary-category" name="primary_category" value="<?php if(isset($post['primary_category'])) echo $post['primary_category']?>">
-				<option value="test">test</option>
+			<select id="form-primary-category" name="primary_category" value="<?php if(isset($post['primary_category'])) echo $post['primary_category']?>" >
+				<?php foreach($categories as $category_obj){ ?>
+				<option value="<?php echo $category_obj->value ?>" <?php if(isset($post['primary_category']) && $post['primary_category'] == $category_obj->value) echo "selected"; else if(isset($loaded_post_obj) && $loaded_post_obj->primary_category == $category_obj->value) echo "selected"; ?> > <?php echo $category_obj->name; ?></option> 
+				<?php }?>
 			</select>
 		</fieldset>
+		<?php ?>
 
 		<fieldset class="label-side">
 			<label for="form-secondary-category">Secondary Category (optional) <?php if(isset($validator->errors['secondary_category'])) echo "<spand class='error'>*</span>"; ?></label>
-			<select id="form-secondary-category" name="secondary_category" value="<?php if(isset($post['secondary_category'])) echo $post['secondary_category']?>">
-				<option value="test">test</option>
+			<select id="form-secondary-category" name="secondary_category" value="<?php if(isset($post['secondary_category'])) echo $post['secondary_category']?>" >
+				<?php foreach($categories as $category_obj){ ?>
+				<option value="<?php echo $category_obj->value ?>" <?php if(isset($post['secondary_category']) && $post['secondary_category'] == $category_obj->value) echo "selected"; else if(isset($loaded_post_obj) && $loaded_post_obj->secondary_category == $category_obj->value) echo "selected"; ?> > <?php echo $category_obj->name; ?></option> 
+				<?php }?>
 			</select>
 		</fieldset>
 		
 		<fieldset style="width: 96.5%">
 			<label for="form-post-content">Post Content (in markdown) <?php if(isset($validator->errors['post_content'])) echo "<spand class='error'>*</span>"; ?></label>
-			<textarea id="form-post-content" name="post_content" value="<?php if(isset($post['post_content'])) echo $post['post_content']?>"></textarea>
+			<textarea id="form-post-content" name="post_content"><?php if(isset($post['post_content'])) echo $post['post_content']; else if(isset($loaded_post_obj)) echo $loaded_post_obj->post_content; ?></textarea>
 		</fieldset>
 
 		<fieldset>
@@ -230,12 +290,12 @@
 
 		<fieldset>
 			<label for="form-source">Source <?php if(isset($validator->errors['source'])) echo "<spand class='error'>*</span>"; ?></label>
-			<input id="form-source" type="text" name="source" value="<?php if(isset($post['source'])) echo $post['source']?>">
+			<input id="form-source" type="text" name="source" value="<?php if(isset($post['source'])) echo $post['source']; else if(isset($loaded_post_obj)) echo $loaded_post_obj->source; ?>">
 		</fieldset>
 
 		<fieldset>
 			<label for="form-source-2">Source line 2 (optional) <?php if(isset($validator->errors['source_line_2'])) echo "<spand class='error'>*</span>"; ?></label>
-			<input id="form-source-2" type="text" name="source_line_2" value="<?php if(isset($post['source_line_2'])) echo $post['source_line_2']?>">
+			<input id="form-source-2" type="text" name="source_line_2" value="<?php if(isset($post['source_line_2'])) echo $post['source_line_2']; else if(isset($loaded_post_obj)) echo $loaded_post_obj->source_line_2; ?>">
 		</fieldset>
 
 		<div id="image-upload-container">
@@ -250,7 +310,7 @@
 
 	</form>
 
-	<form method="post" target="" id="manage-categories" onsubmit="swapVals()">
+	<form method="post" target="" id="manage-categories">
 
 		<h2>Manage Categories</h2>
 

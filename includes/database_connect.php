@@ -33,17 +33,9 @@
 
 	  	//sanitize the contents of $_GET to insure that 
 	  	//malicious strings cannot disrupt your database
-	 	//$get_array = Database::clean($_GET);
+	 	// $get_array = Database::clean($_GET);
 
-	 	//output the results of the http request
-	 	//echo $api->get_json_from_assoc($get_array);
-	 	
-	 	function get_categories(){
-
-	 	}
-
-	 	function get_tags(){
-
-	 	}
+	 	// //output the results of the http request
+	 	// echo $api->get_json_from_assoc($get_array);
 	
 ?>

@@ -36,10 +36,37 @@ class Autocomplete {
 		}else return "{ \"error\" : \"no results found\"}";
 	}
 
-	//adds the contents of a comma delimited organizations list to the organizations table
+	//adds the contents of a comma delimited list to the table
 	//returns false on failure
 	public function add_list_to_table($list){
 		$query = "SELECT $this->column_name FROM " . $this->table;
+		$list = commas_to_array($list);
+		$just_added = array();
+		if($old_list = Database::get_results_as_numerical_array($query, $this->column_name)){
+			//var_dump($old_list); echo "<br>";
+			
+			foreach($list as $list_item){
+				
+				if(!in_array($list_item, $old_list) &&
+				   !in_array($list_item, $just_added)){
+					$this->add_to_table($list_item);
+					$just_added[] = $list_item;
+				}
+			}
+		}else{ //if there is nothing in the organizations table
+			foreach($list as $list_item){
+				if(!in_array($list_item, $just_added)){
+					$this->add_to_table($list_item);
+					$just_added[] = $list_item;
+				}	
+			}
+		}
+	}
+
+	//removes the contents of a comma delimited list from the table
+	//returns false on failure
+	public function remove_list_from_table($list){
+		$query = "DELETE * FROM " . $this->table . " WHERE " . $this->column_name . "=";
 		$list = commas_to_array($list);
 		$just_added = array();
 		if($old_list = Database::get_results_as_numerical_array($query, $this->column_name)){

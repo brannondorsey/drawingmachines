@@ -39,7 +39,7 @@ h2{
 }
 
 //buttons
-button, input[type="submit"]{
+button, input[type="submit"], input[type="button"]{
 	padding: 5px 8px;
 	background-color: $light;
 	color: $dark;
@@ -49,7 +49,7 @@ button, input[type="submit"]{
 	outline: none;
 }
 
-button:hover, input[type="submit"]:hover{
+button:hover, input[type="submit"]:hover, input[type="button"]:hover{
 	background-color: $dark;
 	color: $light;
 	cursor: pointer;
