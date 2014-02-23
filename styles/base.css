@@ -73,6 +73,43 @@ nav.menu {
 .content {
   padding: 20px 0px; }
 
+.image-container {
+  width: 620px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid black;
+  float: left; }
+  .image-container img {
+    width: inherit; }
+    .image-container img #thumb-image {
+      width: 100px; }
+
+.sidebar-container {
+  width: 300px;
+  float: right;
+  overflow: hidden; }
+  .sidebar-container a {
+    text-decoration: underline; }
+  .sidebar-container div {
+    border-bottom: 1px solid black;
+    padding-bottom: 10px; }
+    .sidebar-container div ul {
+      list-style: none;
+      padding: 0px;
+      margin: 0px; }
+    .sidebar-container div span {
+      padding: 4px;
+      display: inline-block; }
+    .sidebar-container div h4 {
+      margin: 10px 0px; }
+
+.post-content-container {
+  padding: 20px 0px;
+  float: left;
+  width: 620px; }
+  .post-content-container h1, .post-content-container h2, .post-content-container h2, .post-content-container h3, .post-content-container h4, .post-content-container h5 {
+    text-align: left;
+    margin: 5px 0px; }
+
 form {
   position: relative;
   width: 80%;
@@ -130,7 +167,8 @@ footer {
   padding-bottom: 40px;
   border-top: 1px solid black;
   font-size: 10pt;
-  font-style: italic; }
+  font-style: italic;
+  clear: both; }
   footer a, footer a:visited {
     color: #427fc0;
     text-decoration: none; }

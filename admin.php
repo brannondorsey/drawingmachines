@@ -29,8 +29,8 @@
 		        $rules['secondary_category'] = array('display'=>'Secondary Category', 'type'=>'string','required'=> false, 'min'=>2, 'max'=>50, 'trim'=>true);
 		        $rules['post_content'] = array('display'=>'Post Content', 'type'=>'string', 'min'=>1, 'max'=>999999, 'required'=> true, 'trim'=>true);
 		        $rules['tags'] = array('display'=>'tags', 'type'=>'string',  'required'=> true, 'min'=>2, 'max'=>255, 'trim'=>true);
-		        $rules['source'] = array('display'=>'Source', 'type'=>'string',  'required'=> false, 'min'=>2, 'max'=>255, 'trim'=>true);
-		        $rules['source_line_2'] = array('display'=>'Source line 2', 'type'=>'string', 'required'=> true, 'min'=>1, 'max'=>255, 'trim'=>true);
+		        $rules['source'] = array('display'=>'Source', 'type'=>'string',  'required'=> true, 'min'=>2, 'max'=>255, 'trim'=>true);
+		        $rules['source_line_2'] = array('display'=>'Source line 2', 'type'=>'string', 'required'=> false, 'min'=>1, 'max'=>255, 'trim'=>true);
 		}
 
 		//if post is from a new categories
@@ -56,7 +56,7 @@
 			//add new tags to database
 			if(isset($post['tags'])){
 				$autocomplete = new Autocomplete('tag', 'tags');
-		        $autocomplete->add_list_to_table($tags);
+		        $autocomplete->add_list_to_table($post['tags']);
 			}
 
 			//add new categories to database
@@ -66,7 +66,7 @@
 		        $categories_saved = true;
 			}
 
-			//add new categories to database
+			//delete categories from database
 			if(isset($post['delete_categories'])){
 				$autocomplete = new Autocomplete('category', 'categories');
 		        $autocomplete->add_list_to_table($categories);
@@ -93,20 +93,37 @@
 						//results saved...
 						$post_saved = true;
 					}
-				}else{ //if this is a new post
+				} else { //if this is a new post
 
 					unset($post['id']);
 					if(Database::execute_from_assoc($post, Database::$table)){
 						//results saved...
 						$post_saved = true;
+						$query = 'SELECT id FROM ' . Database::$table . ' ORDER BY id DESC LIMIT 1';
+						$results = Database::get_all_results($query);
+						$id = (int) $results[0]['id'];
+						var_dump($id);
+					}
+				}
+
+				//save images
+				if (isset($id) &&
+					isset($_FILES) &&
+					!empty($_FILES)) {
+
+					foreach ($_FILES as $key => $value) {
+
+						if ($_FILES[$key]["error"] == 0) {
+							move_uploaded_file($_FILES[$key]["tmp_name"], "images/post_images/" . $_FILES[$key]["name"]);
+						}
 					}
 				}
 			}
 		}
 	}
 
-	if(isset($_GET['post']) &&
-	   !empty($_GET['post'])){
+	if (isset($_GET['post']) &&
+	   !empty($_GET['post'])) {
 	
 	 	$api_array = array(
 	 		'id' => intval($_GET['post']),
@@ -115,9 +132,18 @@
 
 	 	$results = json_decode($api->get_json_from_assoc($api_array));
 	 	
-	 	if(isset($results->data)){
+	 	if (isset($results->data)) {
 	 		$loaded_post_obj = $results->data[0];
 	 	}
+	}
+
+	if (isset($_GET['delete']) &&
+	   !empty($_GET['delete'])) {
+
+		$query = "DELETE FROM " . Database::$table . " WHERE id='" . (int) $_GET['delete'] . "' LIMIT 1";
+		if (Database::execute_sql($query)) {
+			$post_deleted = true;
+		} else $post_delete_error = true;
 	}
 ?>
 
@@ -126,9 +152,10 @@
 <script type="text/javascript" src="scripts/jquery.autosuggest.minified.js"></script>
 <script>
 	var hostname = <?php echo '"' . $HOSTNAME . '"'; ?>;
-	var tagsPreFill = <?php if(isset($post['tags'])) echo '"' . $post['tags'] . '"';
-							else if(isset($loaded_post_obj)) echo  '"' . $loaded_post_obj->tags . '"';
+	var tagsPreFill = <?php if (isset($post['tags'])) echo '"' . $post['tags'] . '"';
+							else if (isset($loaded_post_obj)) echo  '"' . $loaded_post_obj->tags . '"';
 							else echo '""'; ?>;
+	var postSaved = <?php echo (isset($post_saved)) ? "true" : "false"?>;
 
 	$(document).ready(function(){
 
@@ -176,6 +203,11 @@
 		$('#as-values-tags-input').attr('name', 'tags');
 		$('#as-values-add-categories-input').attr('name', 'add_categories');
 		$('#as-values-delete-categories-input').attr('name', 'delete_categories');
+
+		if(postSaved){
+			setTimeout(function(){$('#machine-post')[0].reset();}, 500);
+			console.log('did this');
+		}
 	});
 
 	function addImage(){
@@ -200,20 +232,43 @@
 		}else return false;
 	}
 
+	function deletePost(){
+		var val = $('#machine-post input[name="id"]').val();
+		if(val != ''){
+			var url = window.location.href;
+			var queryIndex = url.indexOf('?');
+			if(queryIndex != -1){
+				url = url.substring(0, queryIndex); //remove old get params	
+			}
+			window.location.href = url + '?delete=' + val;
+		} else { //clear the current form
+			console.log('got here');
+			window.location = window.location.href.split("?")[0]; //reload
+		}
+
+		return false; //don't submit the form
+	}
+
 </script>
 
 <div class="content">
 
 	<?php 
-		if(isset($validator->errors) &&
-			 sizeof($validator->errors) > 0){
+		if (isset($validator->errors) &&
+			 sizeof($validator->errors) > 0) {
 			echo "<p class='error' style='text-align:center'>Oops, looks like there were some errors with your post. Check out the asterisks.</p>";
 		}
-		if(isset($post_saved)){
+		if (isset($post_saved)) {
 			echo "<p class='success' style='text-align:center'>Post Saved</p>";
 		}
-		if(isset($categories_saved)){
+		if (isset($categories_saved)) {
 			echo "<p class='success' style='text-align:center'>Categories Updated</p>";
+		}
+		if (isset($post_deleted)) {
+			echo "<p class='success' style='text-align:center'>Post Deleted</p>";
+		}
+		if (isset($post_delete_error)) {
+			echo "<p class='error' style='text-align:center'>Post Not Deleted</p>";
 		}
 	?>
 
@@ -226,12 +281,12 @@
 			<input type="button" value="Load" onclick="return loadPost();">
 		</fieldset>
 
-		<button id="form-delete" onclick="return false;">Delete</button>
+		<button id="form-delete" onclick="return deletePost()">Delete</button>
 	</form>
 
 	<form method="post" target="" id="machine-post">
 
-		<input type="number" name="id" value="<?php echo isset($loaded_post_obj) ? $loaded_post_obj->id : "0" ; ?>" hidden>
+		<input type="number" name="id" value="<?php echo isset($loaded_post_obj) ? $loaded_post_obj->id : "" ; ?>" hidden>
 
 		<fieldset>
 			<label for="form-name">Name of Device <?php if(isset($validator->erros['device_name'])) echo "<spand class='error'>*</span>"; ?></label>
@@ -298,17 +353,39 @@
 			<input id="form-source-2" type="text" name="source_line_2" value="<?php if(isset($post['source_line_2'])) echo $post['source_line_2']; else if(isset($loaded_post_obj)) echo $loaded_post_obj->source_line_2; ?>">
 		</fieldset>
 
+		<input type="submit" value="Save">
+
+	</form>
+
+	<form id="image-upload">
 		<div id="image-upload-container">
 
 			<fieldset class="image-upload">
 				<label for="image-1">Images</label>
-				<input id="image-1" type="file" name="image-1">
+				<!--<input id="image-1" type="file" name="image-1">-->
 			</fieldset>
 		</div>
 		<button onclick="addImage(); return false;">Add Image</button>
-		<input type="submit" value="Save">
-
 	</form>
+
+	<?php 
+	if (isset($_GET['post']) &&
+		!empty($_GET['post'])) {
+
+		$image_dir = 'images/post_images/' . (int) $_GET['post'];
+		$image_names = preg_grep('/^([^.])/', scandir($image_dir));
+		var_dump($image_dir_files); ?>
+
+		<div id='image-container'>
+
+		<?php foreach ($image_names as $image_name) { ?>
+			<div class='image-container'>
+				<img src="<?php echo $image_name?>" >
+			</div>
+		<?php } ?>
+
+		</div>
+	<?php } ?>
 
 	<form method="post" target="" id="manage-categories">
 
