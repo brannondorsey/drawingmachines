@@ -1,9 +1,5 @@
-
-
 <?php 
-	 require_once "includes/header.php";
-	 require_once "includes/menu.php";
-	 require_once "includes/helpers.php"; 
+
 	 require_once "includes/database_connect.php";
 	 require_once "includes/config.php";
 	 require_once "includes/classes/markdown/Markdown.inc.php";
@@ -35,12 +31,13 @@
 	 				$temp = explode(".", $image_file);
 					$extension = end($temp);
 
-					//if file is an image
-	 				if (in_array(strtolower($extension), $allowed_extensions)) {
+					//if file is an image and not the thumbnail
+	 				if (strstr(strtolower($image_file), "thumbnail") === false &&
+	 					in_array(strtolower($extension), $allowed_extensions)) {
 	 					
-
 	 					//if this is the main image
-	 					if (strstr("main", strtolower($image_file)) !== false) {
+	 					if (strstr( strtolower($image_file), "main") !== false) {
+
 	 						//prepend array
 	 						array_unshift($image_paths, $images_dir . "/" . $image_file);
 	 					} else $image_paths[] = $images_dir . "/" . $image_file; //add to end of array
@@ -52,9 +49,14 @@
 
 	 	} else {
 	 		//error or not found
-	 		//redirect...
+	 		header("Location: " . $HOSTNAME);
+	 		
 	 	}
-	 }
+	 } else header("Location: " . $HOSTNAME);
+
+	 require_once "includes/header.php";
+	 require_once "includes/menu.php";
+	 require_once "includes/helpers.php"; 
 ?>
 <script>
 	$(document).ready(function(){

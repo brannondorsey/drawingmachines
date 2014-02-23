@@ -171,10 +171,7 @@ nav.menu{
 		h4 {
 			margin: 10px 0px;
 		}
-	}
-
-
-	
+	}	
 }
 
 .post-content-container {
@@ -194,6 +191,43 @@ nav.menu{
 	//clear: both;
 	float: left;
 	width: $body_width * 2/3 - 20;
+}
+
+//results page stuff
+//----------------------------------------------------------------
+
+.result {
+	cursor: pointer;
+	overflow: auto;
+	$image_size: 100px;
+	width: 75%;
+	margin: 20px auto;
+	padding-bottom: 20px;
+	border-bottom: 1px solid $dark;
+
+	img {
+		width: $image_size;
+		border: 2px solid $dark;
+		float: left;
+		margin-right: 20px;
+
+	}
+
+	h2 {
+		text-align: center;
+	}
+
+	h3, h4, h5 {
+		margin: 7px;
+		font-weight: 400;
+		// display: inline-block;
+	}
+
+	h4 {
+		font-weight: 200;
+		font-style: italic;
+	}
+
 }
 
 //admin page stuffs

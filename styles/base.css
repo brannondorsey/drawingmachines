@@ -121,6 +121,27 @@ nav.menu {
     font-weight: 200;
     font-style: italic; }
 
+.result {
+  cursor: pointer;
+  overflow: auto;
+  width: 75%;
+  margin: 20px auto;
+  padding-bottom: 20px;
+  border-bottom: 1px solid black; }
+  .result img {
+    width: 100px;
+    border: 2px solid black;
+    float: left;
+    margin-right: 20px; }
+  .result h2 {
+    text-align: center; }
+  .result h3, .result .post-content-container h4, .post-content-container .result h4, .result h4, .result h5 {
+    margin: 7px;
+    font-weight: 400; }
+  .result h4 {
+    font-weight: 200;
+    font-style: italic; }
+
 form {
   position: relative;
   width: 80%;

@@ -11,4 +11,14 @@ function commas_to_array($string) {
 	return $output;
 }
 
+//returns total number of results from an assoc array of api parameters
+//note: pass in search array unaltered from how it will be searched
+function total_numb_results($search_array, $api){
+	$search_array['count_only'] = true;
+	if(array_key_exists('limit', $search_array)) unset($search_array['limit']);
+	if(array_key_exists('page', $search_array)) unset($search_array['page']);
+	$obj = json_decode($api->get_json_from_assoc($search_array));
+	return $obj->count;
+}
+
 ?>
