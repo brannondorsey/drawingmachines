@@ -118,16 +118,25 @@ nav.menu{
 	border-bottom: 1px solid black;
 	float: left;
 	
-	img {
+	//images classes
+	//--------------
+	.main {
 		width: inherit;
-		#main-image {
-			
+	}
 
-		}
-		#thumb-image {
-			width: 100px;
-		}
-		
+	.thumbnail {
+		height: 65px;
+		margin: 0px 5px;
+		cursor: pointer;
+		border: 2px solid $light;
+	}
+
+	.thumbnail:hover {
+		border-color: $dark;
+	}
+
+	.selected {
+		border: 2px solid $dark
 	}
 }
 
@@ -171,9 +180,16 @@ nav.menu{
 .post-content-container {
 
 	padding: 20px 0px;
-	h1, h2, h3, h4, h5{
+	h1, h2, h3{
 		text-align: left;
+		font-weight: 400;
 		margin: 5px 0px;
+	}
+
+	h4 {
+		@extend h3;
+		font-weight: 200;
+		font-style: italic;
 	}
 	//clear: both;
 	float: left;

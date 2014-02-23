@@ -78,10 +78,17 @@ nav.menu {
   padding-bottom: 15px;
   border-bottom: 1px solid black;
   float: left; }
-  .image-container img {
+  .image-container .main {
     width: inherit; }
-    .image-container img #thumb-image {
-      width: 100px; }
+  .image-container .thumbnail {
+    height: 65px;
+    margin: 0px 5px;
+    cursor: pointer;
+    border: 2px solid white; }
+  .image-container .thumbnail:hover {
+    border-color: black; }
+  .image-container .selected {
+    border: 2px solid black; }
 
 .sidebar-container {
   width: 300px;
@@ -106,9 +113,13 @@ nav.menu {
   padding: 20px 0px;
   float: left;
   width: 620px; }
-  .post-content-container h1, .post-content-container h2, .post-content-container h2, .post-content-container h3, .post-content-container h4, .post-content-container h5 {
+  .post-content-container h1, .post-content-container h2, .post-content-container h2, .post-content-container h3, .post-content-container h4 {
     text-align: left;
+    font-weight: 400;
     margin: 5px 0px; }
+  .post-content-container h4 {
+    font-weight: 200;
+    font-style: italic; }
 
 form {
   position: relative;

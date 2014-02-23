@@ -56,21 +56,38 @@
 	 	}
 	 }
 ?>
+<script>
+	$(document).ready(function(){
+		
+		$('.image-container .thumbnail').click(function() {
+			
+		    var state = $(this).is(':selected');
+		    $('.image-container .thumbnail').removeClass('selected');
+		    $(this).addClass('selected', state );
+		    swapImage($(this).attr('src'));
+		});
+	});
 
+	function swapImage(src){
+		$('.image-container .main').attr('src', src);
+	}
+
+</script>
 <div class="content">
 	<?php if (isset($image_paths)):  ?>
 	<div class="image-container">
-		<?php for ($i = 0; $i < 1; $i++): //change $i < i to $i < $image_paths
+		<img src="<?php echo $image_paths[0] ?>" class="main">
+		<?php for ($i = 0; $i < count($image_paths); $i++): //change $i < i to $i < $image_paths
 				$image_path = $image_paths[$i];
 		?>
-		<img src="<?php echo $image_path ?>" id="<?php echo ($i == 0) ? "main-image" : "thumb-image" ;?>">
+		<img src="<?php echo $image_path ?>" class="thumbnail <?php if ($i == 0) echo "selected"?>">
 	
 		<?php endfor ?>
 	</div>
 	<?php endif ?>
 	<div class="sidebar-container">
 		<div>
-			<h4>Download</h4>
+			<h4>Download Images</h4>
 			<ul>
 				<li><a href="#">Small</a> [56KB .jpg]</li>
 				<li><a href="#">Large</a> [1MB .jpg]</li>
