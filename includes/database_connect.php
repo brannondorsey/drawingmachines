@@ -11,6 +11,7 @@
 	  				inventor_line_2,
 	  				year,
 	  				circa,
+	  				categories,
 	  				primary_category,
 	  				secondary_category,
 	  				post_content,

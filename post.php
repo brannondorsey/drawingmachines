@@ -96,11 +96,14 @@
 				<li><a href="#">Original Resolution</a> [7MB .jpg]</li>
 			</ul>
 		</div>
-		<?php if (isset($machine->primary_category)): ?>
+		<?php if (isset($machine->categories)):
+			$categories = commas_to_array($machine->categories);
+		?>
 		<div>
 			<h4>Categories</h4>
-			<span><a href="#"><?php echo $machine->primary_category?></a></span>
-			<?php if (isset($machine->secondary_category)): ?><span><a href="#"><?php echo $machine->secondary_category?></a></span> <?php endif ?>
+			<?php foreach ($categories as $category):?>
+			<span><a href="results.php?categories=<?php echo $category?>&limit=10&order_by=date"><?php echo $category?></a></span>
+			<?php endforeach?>
 
 		</div>
 		<?php endif ?>
@@ -112,7 +115,7 @@
 				$tags_array = commas_to_array($machine->tags);
 				foreach ($tags_array as $tag) { 
 			?>
-			<span><a href="#"><?php echo $tag;?></a></span>
+			<span><a href="results.php?tags=<?php echo $tag?>&limit=10&order_by=date"><?php echo $tag;?></a></span>
 			<?php
 				}
 			endif ?>

@@ -17,13 +17,13 @@ a, a:visited{
 	text-decoration: none;
 }
 
+a:hover{
+		color: $link_hover_color;
+}
+
 p{
 	a {
 		text-decoration: underline;
-	}
-
-	a:hover{
-		color: $link_hover_color;
 	}
 }
 
@@ -193,6 +193,29 @@ nav.menu{
 	width: $body_width * 2/3 - 20;
 }
 
+
+//find page stuff
+//----------------------------------------------------------------
+
+.find {
+
+	div {
+		width: 80%;
+		margin: auto;
+		border-bottom: 1px solid $dark;
+		padding-bottom: 20px;
+
+	}
+
+	.category-container {
+
+		div {
+			width: 30%;
+			margin: 0px;
+		}
+	}
+}
+
 //results page stuff
 //----------------------------------------------------------------
 
@@ -200,7 +223,7 @@ nav.menu{
 	cursor: pointer;
 	overflow: auto;
 	$image_size: 100px;
-	width: 75%;
+	width: 60%;
 	margin: 20px auto;
 	padding-bottom: 20px;
 	border-bottom: 1px solid $dark;
@@ -230,10 +253,14 @@ nav.menu{
 
 }
 
+.pagination-container {
+	text-align: center;
+}
+
 //admin page stuffs
 //----------------------------------------------------------------
 
-form{
+form.admin{
 
 	position: relative;
 	width: 80%;
@@ -313,7 +340,7 @@ form{
 //----------------------------------------------------------------
 
 //footer
-footer{
+footer {
 	width: 100%;
 	padding-bottom: 40px;
 	border-top: 1px solid $dark;

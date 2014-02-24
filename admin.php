@@ -148,7 +148,7 @@
 ?>
 
 <link rel="stylesheet" type="text/css" href="styles/autosuggest.css">
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js" ></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js" ></script>
 <script type="text/javascript" src="scripts/jquery.autosuggest.minified.js"></script>
 <script>
 	var hostname = <?php echo '"' . $HOSTNAME . '"'; ?>;
@@ -208,6 +208,7 @@
 			setTimeout(function(){$('#machine-post')[0].reset();}, 500);
 			console.log('did this');
 		}
+
 	});
 
 	function addImage(){
@@ -249,6 +250,13 @@
 		return false; //don't submit the form
 	}
 
+	function combineCategories() {
+		primaryCategory = $('#form-primary-category').val();
+		secondaryCategory = $('#form-secondary-category').val();
+		var categories = primaryCategory + ',' + secondaryCategory;
+		$('#categories').val(primaryCategory + ',' + secondaryCategory);
+	}
+
 </script>
 
 <div class="content">
@@ -274,7 +282,7 @@
 
 	<h2>Machine Post</h2>
 
-	<form method="post" target="" id="form-load-post" style="border:none">
+	<form method="post" target="" id="form-load-post"  class="admin"style="border:none">
 		<fieldset id="form-load-post" class="label-side" >
 			<label for="load-post">Load Post #</label>
 			<input id="load-post" type="number" min="1" name="load_post" style="width: 70px; margin-right: 5px;">
@@ -284,9 +292,10 @@
 		<button id="form-delete" onclick="return deletePost()">Delete</button>
 	</form>
 
-	<form method="post" target="" id="machine-post">
+	<form method="post" target="" id="machine-post"  class="admin"onsubmit="combineCategories()">
 
 		<input type="number" name="id" value="<?php echo isset($loaded_post_obj) ? $loaded_post_obj->id : "" ; ?>" hidden>
+		<input type="hidden" id="categories" name="categories" value="test" >
 
 		<fieldset>
 			<label for="form-name">Name of Device <?php if(isset($validator->erros['device_name'])) echo "<spand class='error'>*</span>"; ?></label>
@@ -357,7 +366,7 @@
 
 	</form>
 
-	<form id="image-upload">
+	<form id="image-upload" class="admin">
 		<div id="image-upload-container">
 
 			<fieldset class="image-upload">
@@ -387,7 +396,7 @@
 		</div>
 	<?php } ?>
 
-	<form method="post" target="" id="manage-categories">
+	<form method="post" target="" id="manage-categories" class="admin">
 
 		<h2>Manage Categories</h2>
 

@@ -13,11 +13,12 @@
 	 	$page = (isset($_GET['page']) ? $_GET['page'] : 1);
 
 	 	if (isset($results_obj->data)) {
-	 		$numb_results = count($results_obj->data);
+	 		$limit = (isset($query_array['limit'])) ? (int) $query_array : 0;
+	 		$numb_results = max(count($results_obj->data), $limit);
 	 		$total_numb_results = total_numb_results($query_array, $api); //gives total number of pages
 		    $total_pages = ceil($total_numb_results / $numb_results); //calculates total number of pages
 		    if ($page > $total_pages) $page = $total_pages; //sets page to max page if page it exceeds it
-
+		 
 	 	} else {
 	 		//error or no results found
 	 		
@@ -39,8 +40,7 @@
 <div class="content results-container">
 	<h2>Showing results for "<?php 
 		if (isset($query_array["tags"])) echo $query_array["tags"];
-		else if (isset($query_array["primary_category"])) echo $query_array["primary_category"];
-		else if (isset($query_array["secondary_category"])) echo $query_array["secondary_category"];
+		else if (isset($query_array["categories"])) echo $query_array["categories"];
 	?>"</h2>
 	<?php 
 	if (isset($results_obj->data)) :
@@ -53,18 +53,26 @@
 		<h4><?php if (isset($machine->circa)) echo "Circa "; if (isset($machine->year)) echo $machine->year?></h4>
 	</div>
 	<?php endforeach;
-	else: echo "what";
 	endif;?>
 
+	<?php if (isset($total_pages)) { ?>
     <div class="pagination-container">
-        <?php if ($page > 1) { ?>
-        <a class="prev" href="results.php?search=<?php echo $search_string; ?>&amp;page=<?php echo ($page - 1); ?>">&lt;</a>
+        <?php if ($page > 1 &&
+        		  isset($query_array)) {
+        	$query_array["page"] = $page - 1; 
+        	$url_parameters = http_build_query($query_array);
+        	?>
+        <a class="prev" href="results.php?<?php echo $url_parameters; ?>">&lt;</a>
         <?php } ?>
         <span class="count"><?php echo min($page, $total_pages) . " of " . $total_pages ?></span>
-        <?php if ($page < $total_pages) { ?>
-        <a class="next" href="results.php?search=<?php echo $search_string; ?>&amp;page=<?php echo ($page + 1); ?>">&gt;</a>
+        <?php if ($page < $total_pages &&
+        		  isset($query_array)) {
+        	$query_array["page"] = $page + 1; 
+        	$url_parameters = http_build_query($query_array);?>
+        <a class="next" href="results.php?<?php echo $url_parameters; ?>">&gt;</a>
         <?php } ?>
     </div>
+    <?php } ?>
 
 </div>
 
