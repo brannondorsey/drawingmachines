@@ -102,7 +102,6 @@
 						$query = 'SELECT id FROM ' . Database::$table . ' ORDER BY id DESC LIMIT 1';
 						$results = Database::get_all_results($query);
 						$id = (int) $results[0]['id'];
-						var_dump($id);
 					}
 				}
 
@@ -205,8 +204,9 @@
 		$('#as-values-delete-categories-input').attr('name', 'delete_categories');
 
 		if(postSaved){
-			setTimeout(function(){$('#machine-post')[0].reset();}, 500);
-			console.log('did this');
+			$('#machine-post').find('input[type="text"], input[type="hidden"], input[type="number"], textarea').val('');
+			$('ul.as-selections li.as-selection-item').remove(); // reset autoSuggest fields
+			console.log('done');
 		}
 
 	});
@@ -282,7 +282,7 @@
 
 	<h2>Machine Post</h2>
 
-	<form method="post" target="" id="form-load-post"  class="admin"style="border:none">
+	<form method="post" target="" id="form-load-post"  class="admin" style="border:none">
 		<fieldset id="form-load-post" class="label-side" >
 			<label for="load-post">Load Post #</label>
 			<input id="load-post" type="number" min="1" name="load_post" style="width: 70px; margin-right: 5px;">
@@ -292,7 +292,7 @@
 		<button id="form-delete" onclick="return deletePost()">Delete</button>
 	</form>
 
-	<form method="post" target="" id="machine-post"  class="admin"onsubmit="combineCategories()">
+	<form method="post" target="" id="machine-post" class="admin" onsubmit="combineCategories()">
 
 		<input type="number" name="id" value="<?php echo isset($loaded_post_obj) ? $loaded_post_obj->id : "" ; ?>" hidden>
 		<input type="hidden" id="categories" name="categories" value="test" >
@@ -383,7 +383,7 @@
 
 		$image_dir = 'images/post_images/' . (int) $_GET['post'];
 		$image_names = preg_grep('/^([^.])/', scandir($image_dir));
-		var_dump($image_dir_files); ?>
+		?>
 
 		<div id='image-container'>
 

@@ -83,9 +83,9 @@ nav.menu{
 	   }
 
   	li { display: inline-block; }
-  	li:hover{
-		background-color: $dark;
-	}
+ //  	li:hover{
+	// 	background-color: $dark;
+	// }
 
 	a {
 	   display: block;
@@ -95,7 +95,7 @@ nav.menu{
 	}
 
 	a:hover{
-		color: $light;
+		color: $link_hover_color;
 	}
 }
 
@@ -165,7 +165,6 @@ nav.menu{
 		span {
 			padding: 4px;
 			display: inline-block;
-
 		}
 
 		h4 {
@@ -199,7 +198,7 @@ nav.menu{
 
 .find {
 
-	div {
+	div.container {
 		width: 80%;
 		margin: auto;
 		border-bottom: 1px solid $dark;
@@ -207,13 +206,51 @@ nav.menu{
 
 	}
 
-	.category-container {
+	.search-container {
 
-		div {
-			width: 30%;
-			margin: 0px;
+		#search {
+			height: 20px;
+			width: 300px;
 		}
 	}
+
+	.special-tags-container, .category-container {
+		clear: both;
+		overflow: hidden;
+
+		ul {
+			list-style: none;
+		}
+
+		div {
+			float: left;
+			margin-right: 10px;
+		}
+
+		form {
+			width: 100%;
+			clear: both;
+		}
+
+		input[type="submit"] {
+			float: right;
+
+		}
+	}
+
+	// .category-container {
+
+	// 	a { 
+	// 		text-decoration: underline;
+	// 		padding: 7px;
+	// 		display: inline-block;
+	// 	}
+
+	// 	div {
+	// 		width: 80%;
+	// 		margin: auto;
+	// 	}
+	// }
 }
 
 //results page stuff

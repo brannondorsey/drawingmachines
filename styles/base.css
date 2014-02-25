@@ -58,15 +58,13 @@ nav.menu {
     list-style: none; }
   nav.menu li {
     display: inline-block; }
-  nav.menu li:hover {
-    background-color: black; }
   nav.menu a {
     display: block;
     padding: 5px 8px;
     border-radius: 2px;
     text-decoration: none; }
   nav.menu a:hover {
-    color: white; }
+    color: #427fc0; }
 
 #banner {
   width: 100%; }
@@ -122,14 +120,27 @@ nav.menu {
     font-weight: 200;
     font-style: italic; }
 
-.find div {
+.find div.container {
   width: 80%;
   margin: auto;
   border-bottom: 1px solid black;
   padding-bottom: 20px; }
-.find .category-container div {
-  width: 30%;
-  margin: 0px; }
+.find .search-container #search {
+  height: 20px;
+  width: 300px; }
+.find .special-tags-container, .find .category-container {
+  clear: both;
+  overflow: hidden; }
+  .find .special-tags-container ul, .find .category-container ul {
+    list-style: none; }
+  .find .special-tags-container div, .find .category-container div {
+    float: left;
+    margin-right: 10px; }
+  .find .special-tags-container form, .find .category-container form {
+    width: 100%;
+    clear: both; }
+  .find .special-tags-container input[type="submit"], .find .category-container input[type="submit"] {
+    float: right; }
 
 .result {
   cursor: pointer;
