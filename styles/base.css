@@ -218,6 +218,15 @@ form.admin {
 .success {
   color: #0ac439; }
 
+#authorization-box {
+  width: 20%;
+  margin: 40px auto; }
+  #authorization-box input[type="text"], #authorization-box input[type="password"] {
+    display: inline;
+    width: 100%;
+    height: 20px;
+    margin: 10px 0px 15px 0px; }
+
 footer {
   width: 100%;
   padding-bottom: 40px;
@@ -225,6 +234,10 @@ footer {
   font-size: 10pt;
   font-style: italic;
   clear: both; }
+  footer #admin-login {
+    color: #949599;
+    float: right;
+    font-style: normal; }
   footer a, footer a:visited {
     color: #427fc0;
     text-decoration: none; }

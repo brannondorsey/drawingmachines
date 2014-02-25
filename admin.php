@@ -1,119 +1,129 @@
 <?php 
 	
 	//class and helper includes
+	require_once 'includes/classes/class.Session.inc.php';
+	require_once 'includes/config.php';
 	require_once 'includes/classes/class.FormValidator.php';
 	require_once 'includes/classes/class.Autocomplete.php';
 	require_once 'includes/helpers.php';
-
-
-	//content includes
-	require_once 'includes/header.php';
-	require_once 'includes/menu.php';
 	
 	require_once 'includes/database_connect.php';
+
+	Session::start();
 
 	if(isset($_POST) &&
 	   !empty($_POST)){
 
 		$post = Database::clean($_POST);
+
+		//handles loggin if not logged in and autorization code is posted and correct
+		if (!Session::is_logged_in() &&
+			isset($post['auth_user']) &&
+			isset($post['auth_code']) &&
+			$post['auth_user'] == $ADMIN_USER &&
+			$post['auth_code'] == $ADMIN_PASSWORD){
+			Session::login();
+
+		} else { //admin is logged in
 		
-		$rules = array();
-		//if the post is from a machine post
-		if(isset($post['device_name'])){
-
-		      	$rules['device_name'] = array('display'=>'Name of Device', 'type'=>'string',  'required'=> true, 'min'=>2, 'max'=>50, 'trim'=>true);
-		        $rules['inventor'] = array('display'=>'Inventor', 'type'=>'string',  'required'=> true, 'min'=>2, 'max'=>50, 'trim'=>true);
-		        $rules['inventor_line_2'] = array('display'=>'Inventor line 2', 'type'=>'string',  'required'=> false, 'min'=>2, 'max'=>50, 'trim'=>true);
-		        $rules['year'] = array('display'=>'Year', 'type'=>'numeric',  'required'=> true, 'min'=>1, 'max'=>9999, 'trim'=>true);
-		        $rules['primary_category'] = array('display'=>'Primary Category', 'type'=>'string',  'required'=> true, 'min'=>2, 'max'=>50, 'trim'=>true);
-		        $rules['secondary_category'] = array('display'=>'Secondary Category', 'type'=>'string','required'=> false, 'min'=>2, 'max'=>50, 'trim'=>true);
-		        $rules['post_content'] = array('display'=>'Post Content', 'type'=>'string', 'min'=>1, 'max'=>999999, 'required'=> true, 'trim'=>true);
-		        $rules['tags'] = array('display'=>'tags', 'type'=>'string',  'required'=> true, 'min'=>2, 'max'=>255, 'trim'=>true);
-		        $rules['source'] = array('display'=>'Source', 'type'=>'string',  'required'=> true, 'min'=>2, 'max'=>255, 'trim'=>true);
-		        $rules['source_line_2'] = array('display'=>'Source line 2', 'type'=>'string', 'required'=> false, 'min'=>1, 'max'=>255, 'trim'=>true);
-		}
-
-		//if post is from a new categories
-		if(isset($post['add_categories']) &&
-		   !empty($post['add_categories'])){
-			$rules['add_categories'] = array('display' => 'Add Categories', 'type'=>'string',  'required'=>false, 'min'=>2, 'max'=>99999, 'trim'=>true);
-		}
-
-		//if post is to remove a new categories
-		if(isset($post['delete_categories']) &&
-		   !empty($post['delete_categories'])){
-			$rules['delete_categories'] = array('display' => 'Remove Categories', 'type'=>'string',  'required'=>false, 'min'=>2, 'max'=>99999, 'trim'=>true);
-		}
-		
-		$validator = new FormValidator();
-		$validator->addSource($post);
-		$validator->addRules($rules);
-		$validator->run();
-
-		//if form validation fails
-		if(sizeof($validator->errors) <= 0){ //form meets validation rules
-			
-			//add new tags to database
-			if(isset($post['tags'])){
-				$autocomplete = new Autocomplete('tag', 'tags');
-		        $autocomplete->add_list_to_table($post['tags']);
-			}
-
-			//add new categories to database
-			if(isset($post['add_categories'])){
-				$autocomplete = new Autocomplete('category', 'categories');
-		        $autocomplete->add_list_to_table($categories);
-		        $categories_saved = true;
-			}
-
-			//delete categories from database
-			if(isset($post['delete_categories'])){
-				$autocomplete = new Autocomplete('category', 'categories');
-		        $autocomplete->add_list_to_table($categories);
-		        $categories_saved = true;
-			}
-
-			//add post content to database
+			$rules = array();
+			//if the post is from a machine post
 			if(isset($post['device_name'])){
 
-				//if this post was loaded instead of new
-				if(intval($post['id']) != 0){
+			      	$rules['device_name'] = array('display'=>'Name of Device', 'type'=>'string',  'required'=> true, 'min'=>2, 'max'=>50, 'trim'=>true);
+			        $rules['inventor'] = array('display'=>'Inventor', 'type'=>'string',  'required'=> true, 'min'=>2, 'max'=>50, 'trim'=>true);
+			        $rules['inventor_line_2'] = array('display'=>'Inventor line 2', 'type'=>'string',  'required'=> false, 'min'=>2, 'max'=>50, 'trim'=>true);
+			        $rules['year'] = array('display'=>'Year', 'type'=>'numeric',  'required'=> true, 'min'=>1, 'max'=>9999, 'trim'=>true);
+			        $rules['primary_category'] = array('display'=>'Primary Category', 'type'=>'string',  'required'=> true, 'min'=>2, 'max'=>50, 'trim'=>true);
+			        $rules['secondary_category'] = array('display'=>'Secondary Category', 'type'=>'string','required'=> false, 'min'=>2, 'max'=>50, 'trim'=>true);
+			        $rules['post_content'] = array('display'=>'Post Content', 'type'=>'string', 'min'=>1, 'max'=>999999, 'required'=> true, 'trim'=>true);
+			        $rules['tags'] = array('display'=>'tags', 'type'=>'string',  'required'=> true, 'min'=>2, 'max'=>255, 'trim'=>true);
+			        $rules['source'] = array('display'=>'Source', 'type'=>'string',  'required'=> true, 'min'=>2, 'max'=>255, 'trim'=>true);
+			        $rules['source_line_2'] = array('display'=>'Source line 2', 'type'=>'string', 'required'=> false, 'min'=>1, 'max'=>255, 'trim'=>true);
+			}
 
-					$id = $post['id'];
-					unset($post['id']);
-					$query = "UPDATE " . Database::$table . " SET ";
-					foreach($post as $key => $value){
-						$query .= $key . "=\"" . $value . "\", ";
-					}
-					$query = rtrim($query, ", ");
-					$query .= " WHERE id=\"" . $id . "\"";
-					// echo $query;
-					
-					if(Database::execute_sql($query)){
-						//results saved...
-						$post_saved = true;
-					}
-				} else { //if this is a new post
+			//if post is from a new categories
+			if(isset($post['add_categories']) &&
+			   !empty($post['add_categories'])){
+				$rules['add_categories'] = array('display' => 'Add Categories', 'type'=>'string',  'required'=>false, 'min'=>2, 'max'=>99999, 'trim'=>true);
+			}
 
-					unset($post['id']);
-					if(Database::execute_from_assoc($post, Database::$table)){
-						//results saved...
-						$post_saved = true;
-						$query = 'SELECT id FROM ' . Database::$table . ' ORDER BY id DESC LIMIT 1';
-						$results = Database::get_all_results($query);
-						$id = (int) $results[0]['id'];
-					}
+			//if post is to remove a new categories
+			if(isset($post['delete_categories']) &&
+			   !empty($post['delete_categories'])){
+				$rules['delete_categories'] = array('display' => 'Remove Categories', 'type'=>'string',  'required'=>false, 'min'=>2, 'max'=>99999, 'trim'=>true);
+			}
+			
+			$validator = new FormValidator();
+			$validator->addSource($post);
+			$validator->addRules($rules);
+			$validator->run();
+
+			//if form validation fails
+			if(sizeof($validator->errors) <= 0){ //form meets validation rules
+				
+				//add new tags to database
+				if(isset($post['tags'])){
+					$autocomplete = new Autocomplete('tag', 'tags');
+			        $autocomplete->add_list_to_table($post['tags']);
 				}
 
-				//save images
-				if (isset($id) &&
-					isset($_FILES) &&
-					!empty($_FILES)) {
+				//add new categories to database
+				if(isset($post['add_categories'])){
+					$autocomplete = new Autocomplete('category', 'categories');
+			        $autocomplete->add_list_to_table($categories);
+			        $categories_saved = true;
+				}
 
-					foreach ($_FILES as $key => $value) {
+				//delete categories from database
+				if(isset($post['delete_categories'])){
+					$autocomplete = new Autocomplete('category', 'categories');
+			        $autocomplete->add_list_to_table($categories);
+			        $categories_saved = true;
+				}
 
-						if ($_FILES[$key]["error"] == 0) {
-							move_uploaded_file($_FILES[$key]["tmp_name"], "images/post_images/" . $_FILES[$key]["name"]);
+				//add post content to database
+				if(isset($post['device_name'])){
+
+					//if this post was loaded instead of new
+					if(intval($post['id']) != 0){
+
+						$id = $post['id'];
+						unset($post['id']);
+						$query = "UPDATE " . Database::$table . " SET ";
+						foreach($post as $key => $value){
+							$query .= $key . "=\"" . $value . "\", ";
+						}
+						$query = rtrim($query, ", ");
+						$query .= " WHERE id=\"" . $id . "\"";
+						// echo $query;
+						
+						if(Database::execute_sql($query)){
+							//results saved...
+							$post_saved = true;
+						}
+					} else { //if this is a new post
+
+						unset($post['id']);
+						if(Database::execute_from_assoc($post, Database::$table)){
+							//results saved...
+							$post_saved = true;
+							$query = 'SELECT id FROM ' . Database::$table . ' ORDER BY id DESC LIMIT 1';
+							$results = Database::get_all_results($query);
+							$id = (int) $results[0]['id'];
+						}
+					}
+
+					//save images
+					if (isset($id) &&
+						isset($_FILES) &&
+						!empty($_FILES)) {
+
+						foreach ($_FILES as $key => $value) {
+
+							if ($_FILES[$key]["error"] == 0) {
+								move_uploaded_file($_FILES[$key]["tmp_name"], "images/post_images/" . $_FILES[$key]["name"]);
+							}
 						}
 					}
 				}
@@ -144,6 +154,12 @@
 			$post_deleted = true;
 		} else $post_delete_error = true;
 	}
+
+	//content includes
+	require_once 'includes/header.php';
+	require_once 'includes/menu.php';
+
+	if (Session::is_logged_in()) {
 ?>
 
 <link rel="stylesheet" type="text/css" href="styles/autosuggest.css">
@@ -415,5 +431,5 @@
 		<input type="submit" style="margin-top: 20px;" value="Update Categories">
 	</form>
 </div>
-
+<?php } else require_once 'includes/login_form.php'; ?>
 <?php require_once 'includes/footer.php' ?>
