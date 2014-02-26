@@ -66,8 +66,18 @@ nav.menu {
   nav.menu a:hover {
     color: #427fc0; }
 
-#banner {
-  width: 100%; }
+#banner-gallery {
+  width: 100%;
+  /* Set your image width */ }
+
+#banner-gallery img {
+  display: none;
+  width: 960px;
+  height: 420px;
+  cursor: pointer; }
+
+#banner-gallery img.active {
+  display: block; }
 
 .content {
   padding: 20px 0px; }
