@@ -21,4 +21,11 @@ function total_numb_results($search_array, $api){
 	return $obj->count;
 }
 
+// removes $char from the FRONT of each array item and capitalizes them
+function remove_char_from_tags(&$array, $char) {
+
+	for ($i = 0; $i < count($array); $i++) {
+		 $array[$i]->name = ucfirst(ltrim(($array[$i]->name), $char));
+	}
+}
 ?>

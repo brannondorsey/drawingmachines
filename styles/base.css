@@ -145,7 +145,7 @@ nav.menu {
     list-style: none; }
   .find .special-tags-container div, .find .category-container div {
     float: left;
-    margin-right: 10px; }
+    margin-right: 5px; }
   .find .special-tags-container form, .find .category-container form {
     width: 100%;
     clear: both; }

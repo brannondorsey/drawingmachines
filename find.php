@@ -12,15 +12,19 @@
 	 $categories = file_get_contents($HOSTNAME . "/api/autocomplete.php?table=categories&column_name=category&chars=");
 	 $categories = json_decode($categories);
 
-	 $tags = file_get_contents($HOSTNAME . "/api/autocomplete.php?table=tags&column_name=tag&chars=");
+	 $tags = file_get_contents($HOSTNAME . "/api/autocomplete.php?table=tags&column_name=tag&chars=#");
 	 $tags = json_decode($tags);
+
+	 remove_char_from_tags($tags, "#");
 	 
-	 $numb_tag_in_column = ceil(count($tags) / 4);
+	 $numb_tag_columns = 3;
+	 $numb_tag_in_column = ceil(count($tags) / $numb_tag_columns);
 
 	 $numb_category_columns = 5;
 	 $numb_categories_in_column = ceil(count($categories) / $numb_category_columns);
 ?>
 <script>
+
 	function combineCheckboxes() {
 
 		var commaSeperated = $('.special-tags-container .checkbox:checked').map(function() {
@@ -44,10 +48,11 @@
 	
 	<div class="special-tags-container container">
 		<h3>"Im looking for a drawing machine that..."</h3>
+			<?php if (count($tags) >= $numb_tag_columns): ?>
 			<!-- <form action="results.php" method="get"> -->
 			<div>
 				<ul>
-					<?php for ($i = 0; $i <= $numb_tag_in_column; $i++):
+					<?php for ($i = 0; $i < $numb_tag_in_column; $i++):
 							$tag = $tags[$i]; ?>
 					<li>
 						<a href="results.php?tags=<?php echo $tag->name?>"><?php echo $tag->name?></a>
@@ -60,20 +65,7 @@
 
 			<div>
 				<ul>
-					<?php for (; $i <= $numb_tag_in_column * 2; $i++):
-							$tag = $tags[$i]; ?>
-					<li>
-						<a href="results.php?tags=<?php echo $tag->name?>"><?php echo $tag->name?></a>
-						<!-- <input type="checkbox" name="tags" class="checkbox" value="<?php echo $tag->name?>"> -->
-						<?php //echo $tag->name?>
-					</li>
-					<?php endfor ?>	
-				</ul>
-			</div>
-
-			<div>
-				<ul>
-					<?php for (; $i <= $numb_tag_in_column * 3; $i++):
+					<?php for (; $i < $numb_tag_in_column * 2; $i++):
 							$tag = $tags[$i]; ?>
 					<li>
 						<a href="results.php?tags=<?php echo $tag->name?>"><?php echo $tag->name?></a>
@@ -96,6 +88,9 @@
 					<?php endfor ?>	
 				</ul>
 			</div>
+
+			
+			<?php endif ?>
 
 		<!-- <form action="results.php" id="form-tags" method="get" onsubmit="combineCheckboxes()">
 			<input type="hidden" name="tags">

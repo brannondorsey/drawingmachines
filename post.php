@@ -113,6 +113,11 @@
 			<h4>Tags</h4>
 			<?php if (isset($machine->tags)): 
 				$tags_array = commas_to_array($machine->tags);
+
+				for ($i = 0; $i < count($tags_array); $i++) {
+					 $tags_array[$i] = ucfirst(ltrim(($tags_array[$i]), "#"));
+				}
+
 				foreach ($tags_array as $tag) { 
 			?>
 			<span><a href="results.php?tags=<?php echo $tag?>&limit=10&order_by=date"><?php echo $tag;?></a></span>
