@@ -111,7 +111,7 @@
 		<div>
 			<ul>
 			<?php 
-			for (; $j < $condition; $j++): 
+			for (; $j < $condition - 1; $j++): 
 					$category = $categories[$j];
 			?>
 				<li>
