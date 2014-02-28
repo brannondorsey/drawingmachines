@@ -17,10 +17,10 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8 */;
 
 --
--- Database: `drawingmachines`
+-- Database: `drawingm_drawingmachines`
 --
-CREATE DATABASE IF NOT EXISTS `drawingmachines` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;
-USE `drawingmachines`;
+CREATE DATABASE IF NOT EXISTS `drawingm_drawingmachines` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;
+USE `drawingm_drawingmachines`;
 
 -- --------------------------------------------------------
 
