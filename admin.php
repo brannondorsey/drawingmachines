@@ -10,6 +10,12 @@
 
 	Session::start();
 
+	// this should be checked first
+	if (isset($_GET['image_error']) &&
+		!empty($_GET['image_error'])) {
+		$image_error = true;
+	}
+
 	if(isset($_POST) &&
 	   !empty($_POST)){
 
@@ -84,6 +90,8 @@
 				//add post content to database
 				if(isset($post['device_name'])){
 
+					$id = NULL;
+
 					//if this post was loaded instead of new
 					if(intval($post['id']) != 0){
 
@@ -114,15 +122,24 @@
 					}
 
 					//save images
-					if (isset($id) &&
+					if ($id != NULL &&
 						isset($_FILES) &&
 						!empty($_FILES)) {
 
 						foreach ($_FILES as $key => $value) {
 
+							$file_upload_success = false;
+
 							if ($_FILES[$key]["error"] == 0) {
-								move_uploaded_file($_FILES[$key]["tmp_name"], "images/post_images/" . $_FILES[$key]["name"]);
-							}
+
+								$images_dir = "images/machine_images";
+								if (!file_exists($images_dir . "/" . $id)) mkdir($images_dir . "/" . $id);
+								$file_upload_success = move_uploaded_file($_FILES[$key]["tmp_name"], $images_dir . "/" . $id . "/" . $_FILES[$key]["name"]);
+								
+							} else $file_upload_success = false;
+
+							if ($file_upload_success) unset($image_error);
+							else header("Location: " . $HOSTNAME . "/admin.php?post=" . $id . "&image_error=true");
 						}
 					}
 				}
@@ -293,6 +310,9 @@
 		if (isset($post_delete_error)) {
 			echo "<p class='error' style='text-align:center'>Post Not Deleted</p>";
 		}
+		if (isset($image_error)) {
+			echo "<p class='error' style='text-align:center'>Error saving images</p>";
+		}
 	?>
 
 	<h2>Machine Post</h2>
@@ -307,7 +327,7 @@
 		<button id="form-delete" onclick="return deletePost()">Delete</button>
 	</form>
 
-	<form method="post" target="" id="machine-post" class="admin" onsubmit="combineCategories()">
+	<form method="post" enctype="multipart/form-data" target="" id="machine-post" class="admin" onsubmit="combineCategories()">
 
 		<input type="number" name="id" value="<?php echo isset($loaded_post_obj) ? $loaded_post_obj->id : "" ; ?>" hidden>
 		<input type="hidden" id="categories" name="categories" value="test" >
@@ -324,7 +344,7 @@
 
 		<fieldset>
 			<label for="form-inventor-2">Inventor line 2 (optional) <?php if(isset($validator->errors['inventor_line_2'])) echo "<spand class='error'>*</span>"; ?></label>
-			<input id="form-inventor-2" type="text" name="inventor_line_2" value="<?php if(isset($post['inventor_line_2'])) echo $post['inventor_line_2']; else if(isset($loaded_post_obj)) echo $loaded_post_obj->inventor_line_2?>">
+			<input id="form-inventor-2" type="text" name="inventor_line_2" value="<?php if(isset($post['inventor_line_2'])) echo $post['inventor_line_2']; else if(isset($loaded_post_obj->inventor_line_2)) echo $loaded_post_obj->inventor_line_2?>">
 		</fieldset>
 
 		<fieldset class="label-side">
@@ -374,14 +394,9 @@
 
 		<fieldset>
 			<label for="form-source-2">Source line 2 (optional) <?php if(isset($validator->errors['source_line_2'])) echo "<spand class='error'>*</span>"; ?></label>
-			<input id="form-source-2" type="text" name="source_line_2" value="<?php if(isset($post['source_line_2'])) echo $post['source_line_2']; else if(isset($loaded_post_obj)) echo $loaded_post_obj->source_line_2; ?>">
+			<input id="form-source-2" type="text" name="source_line_2" value="<?php if(isset($post['source_line_2'])) echo $post['source_line_2']; else if(isset($loaded_post_obj->source_line_2)) echo $loaded_post_obj->source_line_2; ?>">
 		</fieldset>
 
-		<input type="submit" value="Save">
-
-	</form>
-
-	<form id="image-upload" enctype="multipart/form-data" class="admin" action="">
 		<div id="image-upload-container">
 
 			<fieldset class="image-upload">
@@ -390,17 +405,31 @@
 			</fieldset>
 		</div>
 		<button onclick="addImage(); return false;">Add Image</button>
+
+		<input type="submit" value="Save">
+
 	</form>
+
+	<!-- <form id="image-upload" enctype="multipart/form-data" class="admin" action="">
+		<div id="image-upload-container">
+
+			<fieldset class="image-upload">
+				<label for="image-1">Images</label> -->
+				<!--<input id="image-1" type="file" name="image-1">-->
+<!-- 			</fieldset>
+		</div>
+		<button onclick="addImage(); return false;">Add Image</button>
+	</form> -->
 
 	<?php 
 	if (isset($_GET['post']) &&
 		!empty($_GET['post'])) {
 
-		$image_dir = 'images/post_images/' . (int) $_GET['post'];
+		$image_dir = 'images/machine_images/' . (int) $_GET['post'];
 		$image_names = preg_grep('/^([^.])/', scandir($image_dir));
 		?>
 
-		<div id='image-container'>
+		<!-- <div id='image-container'>
 
 		<?php foreach ($image_names as $image_name) { ?>
 			<div class='image-container'>
@@ -408,10 +437,10 @@
 			</div>
 		<?php } ?>
 
-		</div>
+		</div> -->
 	<?php } ?>
 
-	<form method="post" target="" id="manage-categories" class="admin">
+	<!-- <form method="post" target="" id="manage-categories" class="admin">
 
 		<h2>Manage Categories</h2>
 
@@ -428,7 +457,7 @@
 		</fieldset>
 
 		<input type="submit" style="margin-top: 20px;" value="Update Categories">
-	</form>
+	</form> -->
 </div>
 <?php } else require_once 'includes/login_form.php'; ?>
 <?php require_once 'includes/footer.php' ?>
