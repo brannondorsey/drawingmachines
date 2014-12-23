@@ -2,7 +2,6 @@
 	
 	//class and helper includes
 	require_once 'includes/classes/class.Session.inc.php';
-	require_once 'includes/config.php';
 	require_once 'includes/classes/class.FormValidator.php';
 	require_once 'includes/classes/class.Autocomplete.php';
 	require_once 'includes/helpers.php';
@@ -382,7 +381,7 @@
 
 	</form>
 
-	<form id="image-upload" class="admin">
+	<form id="image-upload" enctype="multipart/form-data" class="admin" action="">
 		<div id="image-upload-container">
 
 			<fieldset class="image-upload">

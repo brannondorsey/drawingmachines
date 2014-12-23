@@ -1,7 +1,5 @@
 <?php 
-
 	 require_once "includes/database_connect.php";
-	 require_once "includes/config.php";
 	 require_once "includes/helpers.php";
 	 require_once "includes/classes/markdown/Markdown.inc.php";
 

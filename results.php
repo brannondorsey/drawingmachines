@@ -1,7 +1,6 @@
 <?php 
 
 	 require_once "includes/database_connect.php";
-	 require_once "includes/config.php";
 	 require_once "includes/helpers.php";
 	 require_once "includes/classes/markdown/Markdown.inc.php";
 
@@ -13,6 +12,7 @@
 	 	$page = (isset($_GET['page']) ? $_GET['page'] : 1);
 
 	 	if (isset($results_obj->data)) {
+	 		
 	 		$limit = (isset($query_array['limit'])) ? (int) $query_array : 0;
 	 		$numb_results = max(count($results_obj->data), $limit);
 	 		$total_numb_results = total_numb_results($query_array, $api); //gives total number of pages
@@ -21,8 +21,8 @@
 		 
 	 	} else {
 	 		//error or no results found
-	 		
 	 	}
+
 	 } else header("Location: " . $HOSTNAME);
 
 	 require_once "includes/header.php";
@@ -41,6 +41,7 @@
 	<h2>Showing results for "<?php 
 		if (isset($query_array["tags"])) echo $query_array["tags"];
 		else if (isset($query_array["categories"])) echo $query_array["categories"];
+		else if (isset($query_array["search"])) echo $query_array["search"];
 	?>"</h2>
 	<?php 
 	if (isset($results_obj->data)) :
