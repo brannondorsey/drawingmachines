@@ -1,8 +1,6 @@
 <?php 
 	require_once "includes/classes/class.API.inc.php";
 	require_once "includes/config.php";
-	require_once "includes/header.php";
-	require_once "includes/menu.php";
 
 	$category_columns = 
 				"id,
@@ -47,6 +45,9 @@
 			array_push($categories[$category->class], $category);
 		}
 	}
+
+	require_once "includes/header.php";
+	require_once "includes/menu.php";
 ?>
 
 <script>
