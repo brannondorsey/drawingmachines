@@ -21,17 +21,6 @@
 	 $numb_category_columns = 5;
 	 $numb_categories_in_column = ceil(count($categories) / $numb_category_columns);
 ?>
-<script>
-
-	function combineCheckboxes() {
-
-		var commaSeperated = $('.special-tags-container .checkbox:checked').map(function() {
-		    return this.value;
-		}).get().join(' OR ');
-		$('#form-tags input[type="hidden"]').val(commaSeperated);
-		// console.log($('#form-tags input[type="hidden"]').val());
-	}
-</script>
 
 <div class="content find">
 	
@@ -113,7 +102,7 @@
 					$category = $categories[$j];
 			?>
 				<li>
-					<a href="results.php?categories=<?php if ($category->name != '') echo $category->name ?>"><?php if ($category->name != '') echo $category->name?></a>
+					<a href="results.php?category=<?php if ($category->name != '') echo $category->name ?>"><?php if ($category->name != '') echo $category->name?></a>
 				</li>
 			<?php endfor ?>
 			</ul>	

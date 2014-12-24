@@ -96,15 +96,11 @@
 				<li><a href="#">Original Resolution</a> [7MB .jpg]</li>
 			</ul>
 		</div>
-		<?php if (isset($machine->categories)):
-			$categories = commas_to_array($machine->categories);
+		<?php if (isset($machine->category)):
 		?>
 		<div>
-			<h4>Categories</h4>
-			<?php foreach ($categories as $category):?>
-			<span><a href="results.php?categories=<?php echo $category?>&limit=10&order_by=date"><?php echo $category?></a></span>
-			<?php endforeach?>
-
+			<h4>Category</h4>
+			<span><a href="results.php?category=<?php echo $machine->category?>&limit=10&order_by=date"><?php echo $machine->category?></a></span>
 		</div>
 		<?php endif ?>
 

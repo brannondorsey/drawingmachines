@@ -36,7 +36,7 @@
 		require_once "includes/database_connect.php";
 
 		$query_array = array(
-			'categories' => $category_obj->category,
+			'category' => $category_obj->category,
 			'order_by' => 'year',
 			'limit' => 10);
 
@@ -62,7 +62,7 @@
 	<div class="category">
 		<img src="<?php echo $image_file?>" class="category-image" />
 		<?php echo Michelf\Markdown::defaultTransform($category_obj->description) ?>
-		<p>Click <a href="results.php?categories=<?php echo $category_obj->category?>&exact=true">here</a> to browse by this category.</p>
+		<p>Click <a href="results.php?category=<?php echo $category_obj->category?>&exact=true">here</a> to browse by this category.</p>
 	</div>
 	<?php if ($machine_results != NULL): ?>
 	<div class="machine-results-container">
@@ -74,7 +74,7 @@
 			<h4><?php if (isset($machine->circa)) echo "Circa "; if (isset($machine->year)) echo $machine->year?></h4>
 		</div>
 		<?php endforeach ?>
-		<p>Click <a href="results.php?categories=<?php echo $category_obj->category?>&exact=true">here</a>
+		<p>Click <a href="results.php?category=<?php echo $category_obj->category?>&exact=true">here</a>
 		 to view more machines in this category.</p>
 	</div>
 	<?php endif ?>

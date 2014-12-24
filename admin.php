@@ -39,8 +39,7 @@
 			        $rules['inventor'] = array('display'=>'Inventor', 'type'=>'string',  'required'=> true, 'min'=>2, 'max'=>50, 'trim'=>true);
 			        $rules['inventor_line_2'] = array('display'=>'Inventor line 2', 'type'=>'string',  'required'=> false, 'min'=>2, 'max'=>50, 'trim'=>true);
 			        $rules['year'] = array('display'=>'Year', 'type'=>'numeric',  'required'=> true, 'min'=>1, 'max'=>9999, 'trim'=>true);
-			        $rules['primary_category'] = array('display'=>'Primary Category', 'type'=>'string',  'required'=> true, 'min'=>2, 'max'=>50, 'trim'=>true);
-			        $rules['secondary_category'] = array('display'=>'Secondary Category', 'type'=>'string','required'=> false, 'min'=>2, 'max'=>50, 'trim'=>true);
+			        $rules['category'] = array('display'=>'Category', 'type'=>'string',  'required'=> true, 'min'=>2, 'max'=>50, 'trim'=>true);
 			        $rules['post_content'] = array('display'=>'Post Content', 'type'=>'string', 'min'=>1, 'max'=>999999, 'required'=> true, 'trim'=>true);
 			        $rules['tags'] = array('display'=>'tags', 'type'=>'string',  'required'=> true, 'min'=>2, 'max'=>255, 'trim'=>true);
 			        $rules['source'] = array('display'=>'Source', 'type'=>'string',  'required'=> true, 'min'=>2, 'max'=>255, 'trim'=>true);
@@ -147,28 +146,32 @@
 		}
 	}
 
-	if (isset($_GET['post']) &&
-	   !empty($_GET['post'])) {
-	
-	 	$api_array = array(
-	 		'id' => intval($_GET['post']),
-	 		'limit' => '1'
-		);
+	if (Session::is_logged_in()) {
 
-	 	$results = json_decode($api->get_json_from_assoc($api_array));
-	 	
-	 	if (isset($results->data)) {
-	 		$loaded_post_obj = $results->data[0];
-	 	}
-	}
+		if (isset($_GET['post']) &&
+		   !empty($_GET['post'])) {
+		
+		 	$api_array = array(
+		 		'id' => intval($_GET['post']),
+		 		'limit' => '1'
+			);
 
-	if (isset($_GET['delete']) &&
-	   !empty($_GET['delete'])) {
+		 	$results = json_decode($api->get_json_from_assoc($api_array));
+		 	
+		 	if (isset($results->data)) {
+		 		$loaded_post_obj = $results->data[0];
+		 	}
+		}
 
-		$query = "DELETE FROM " . Database::$table . " WHERE id='" . (int) $_GET['delete'] . "' LIMIT 1";
-		if (Database::execute_sql($query)) {
-			$post_deleted = true;
-		} else $post_delete_error = true;
+		if (isset($_GET['delete']) &&
+		   !empty($_GET['delete'])) {
+
+			$query = "DELETE FROM " . Database::$table . " WHERE id='" . (int) $_GET['delete'] . "' LIMIT 1";
+			if (Database::execute_sql($query)) {
+				$post_deleted = true;
+				shell_exec('rm -rf images/machine_images/' . (int) $_GET['delete']);
+			} else $post_delete_error = true;
+		}
 	}
 
 	//content includes
@@ -281,14 +284,6 @@
 
 		return false; //don't submit the form
 	}
-
-	function combineCategories() {
-		primaryCategory = $('#form-primary-category').val();
-		secondaryCategory = $('#form-secondary-category').val();
-		var categories = primaryCategory + ',' + secondaryCategory;
-		$('#categories').val(primaryCategory + ',' + secondaryCategory);
-	}
-
 </script>
 
 <div class="content">
@@ -299,7 +294,7 @@
 			echo "<p class='error' style='text-align:center'>Oops, looks like there were some errors with your post. Check out the asterisks.</p>";
 		}
 		if (isset($post_saved)) {
-			echo "<p class='success' style='text-align:center'>Post Saved</p>";
+			echo "<p class='success' style='text-align:center'>Post Saved, click <a href='post.php?id=" . $id . "' target='_blank' style='color:inherit;'>here</a> to view.</p>";
 		}
 		if (isset($categories_saved)) {
 			echo "<p class='success' style='text-align:center'>Categories Updated</p>";
@@ -327,10 +322,9 @@
 		<button id="form-delete" onclick="return deletePost()">Delete</button>
 	</form>
 
-	<form method="post" enctype="multipart/form-data" target="" id="machine-post" class="admin" onsubmit="combineCategories()">
+	<form method="post" enctype="multipart/form-data" target="" id="machine-post" class="admin">
 
 		<input type="number" name="id" value="<?php echo isset($loaded_post_obj) ? $loaded_post_obj->id : "" ; ?>" hidden>
-		<input type="hidden" id="categories" name="categories" value="test" >
 
 		<fieldset>
 			<label for="form-name">Name of Device <?php if(isset($validator->erros['device_name'])) echo "<spand class='error'>*</span>"; ?></label>
@@ -359,24 +353,14 @@
 			$categories = json_decode(file_get_contents($HOSTNAME . "/api/autocomplete.php?column_name=category&table=categories&chars="));
 		?>
 		<fieldset class="label-side">
-			<label for="form-primary-category">Primary Category <?php if(isset($validator->errors['primary_category'])) echo "<spand class='error'>*</span>"; ?></label>
-			<select id="form-primary-category" name="primary_category" value="<?php if(isset($post['primary_category'])) echo $post['primary_category']?>" >
+			<label for="form-category">Category <?php if(isset($validator->errors['category'])) echo "<spand class='error'>*</span>"; ?></label>
+			<select id="form-category" name="category" value="<?php if(isset($post['category'])) echo $post['category']?>" >
 				<?php foreach($categories as $category_obj){ ?>
-				<option value="<?php echo $category_obj->value ?>" <?php if(isset($post['primary_category']) && $post['primary_category'] == $category_obj->value) echo "selected"; else if(isset($loaded_post_obj) && $loaded_post_obj->primary_category == $category_obj->value) echo "selected"; ?> > <?php echo $category_obj->name; ?></option> 
+				<option value="<?php echo $category_obj->value ?>" <?php if(isset($post['category']) && $post['category'] == $category_obj->value) echo "selected"; else if(isset($loaded_post_obj) && $loaded_post_obj->category == $category_obj->value) echo "selected"; ?> > <?php echo $category_obj->name; ?></option> 
 				<?php }?>
 			</select>
 		</fieldset>
 		<?php ?>
-
-		<fieldset class="label-side">
-			<label for="form-secondary-category">Secondary Category (optional) <?php if(isset($validator->errors['secondary_category'])) echo "<spand class='error'>*</span>"; ?></label>
-			<select id="form-secondary-category" name="secondary_category" value="<?php if(isset($post['secondary_category'])) echo $post['secondary_category']?>" >
-				<?php foreach($categories as $category_obj){ ?>
-				<option value="<?php echo $category_obj->value ?>" <?php if(isset($post['secondary_category']) && $post['secondary_category'] == $category_obj->value) echo "selected"; else if(isset($loaded_post_obj) && $loaded_post_obj->secondary_category == $category_obj->value) echo "selected"; ?> > <?php echo $category_obj->name; ?></option> 
-				<?php }?>
-			</select>
-		</fieldset>
-		
 		<fieldset style="width: 96.5%">
 			<label for="form-post-content">Post Content (in markdown) <?php if(isset($validator->errors['post_content'])) echo "<spand class='error'>*</span>"; ?></label>
 			<textarea id="form-post-content" name="post_content"><?php if(isset($post['post_content'])) echo $post['post_content']; else if(isset($loaded_post_obj)) echo $loaded_post_obj->post_content; ?></textarea>
@@ -403,7 +387,26 @@
 				<label for="image-1">Images</label>
 				<!--<input id="image-1" type="file" name="image-1">-->
 			</fieldset>
+
+				<?php 
+			if (isset($_GET['post']) &&
+				!empty($_GET['post'])) {
+
+				$image_dir = 'images/machine_images/' . (int) $_GET['post'];
+				
+				if (file_exists($image_dir)) {
+				
+				$image_names = preg_grep('/^([^.])/', scandir($image_dir));
+				?>
+				<div>
+					<?php foreach ($image_names as $image_name) { ?>
+					<img src="<?php echo $image_dir . "/" . $image_name?>" class="machine-image">
+					<?php } ?>
+				</div>
+			<?php }
+			} ?>
 		</div>
+
 		<button onclick="addImage(); return false;">Add Image</button>
 
 		<input type="submit" value="Save">
@@ -420,25 +423,6 @@
 		</div>
 		<button onclick="addImage(); return false;">Add Image</button>
 	</form> -->
-
-	<?php 
-	if (isset($_GET['post']) &&
-		!empty($_GET['post'])) {
-
-		$image_dir = 'images/machine_images/' . (int) $_GET['post'];
-		$image_names = preg_grep('/^([^.])/', scandir($image_dir));
-		?>
-
-		<!-- <div id='image-container'>
-
-		<?php foreach ($image_names as $image_name) { ?>
-			<div class='image-container'>
-				<img src="<?php echo $image_name?>" >
-			</div>
-		<?php } ?>
-
-		</div> -->
-	<?php } ?>
 
 	<!-- <form method="post" target="" id="manage-categories" class="admin">
 

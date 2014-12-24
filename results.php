@@ -40,7 +40,7 @@
 <div class="content results-container">
 	<h2>Showing results for "<?php 
 		if (isset($query_array["tags"])) echo $query_array["tags"];
-		else if (isset($query_array["categories"])) echo $query_array["categories"];
+		else if (isset($query_array["category"])) echo $query_array["category"];
 		else if (isset($query_array["search"])) echo $query_array["search"];
 	?>"</h2>
 	<?php 
