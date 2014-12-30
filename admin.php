@@ -9,8 +9,6 @@
 	
 	require_once 'includes/database_connect.php';
 
-	phpinfo();
-
 	Session::start();
 
 	// this should be checked first
@@ -145,19 +143,19 @@
 
 									$sub_folder = "thumbnail";
 									$mime_types = array('image/jpeg', 'image/png');
-									$results = upload_file($images_dir . "/" . $id . "/" . $sub_folder, $file, 2, $mime_types);
+									$results = upload_file($images_dir . "/" . $id . "/" . $sub_folder, $_FILES[$key], 2, $mime_types);
 
 								} else if (preg_match('/^image-\d+/', $key) == 1) {
 
 									$sub_folder = "web";
 									$mime_types = array('image/jpeg', 'image/png');
-									$results = upload_file($images_dir . "/" . $id . "/" . $sub_folder, $file, 5, $mime_types);
+									$results = upload_file($images_dir . "/" . $id . "/" . $sub_folder, $_FILES[$key], 5, $mime_types);
 
 								} else if (preg_match('/^bundle-\d+/', $key) == 1) {
 
 									$sub_folder = "bundle";
 									$mime_types = array('application/zip');
-									$results = upload_file($images_dir . "/" . $id . "/" . $sub_folder, $file, 100, $mime_types);
+									$results = upload_file($images_dir . "/" . $id . "/" . $sub_folder, $_FILES[$key], 100, $mime_types);
 								}
 
 							}
@@ -184,7 +182,25 @@
 		 	$results = json_decode($api->get_json_from_assoc($api_array));
 		 	
 		 	if (isset($results->data)) {
+
 		 		$loaded_post_obj = $results->data[0];
+
+		 		// load files already updated
+		 		$image_dir = 'images/machine/' . (int) $_GET['post'] . '/web';
+		 		$thumbnail_dir = 'images/machine/' . (int) $_GET['post'] . '/thumbnail';
+		 		$bundle_dir = 'images/machine/' . (int) $_GET['post'] . '/bundle';
+
+		 		if (file_exists($image_dir)) {
+					$image_names = preg_grep('/^([^.])/', scandir($image_dir));
+				}
+				
+				if (file_exists($thumbnail_dir)) {
+					$thumbnail_name = current(preg_grep('/^([^.])/', scandir($thumbnail_dir)));
+				}
+
+				if (file_exists($image_dir)) {
+					$bundle_names = preg_grep('/^([^.])/', scandir($bundle_dir));
+				}
 		 	}
 		}
 
@@ -197,6 +213,8 @@
 				shell_exec('rm -rf images/machine/' . (int) $_GET['delete']);
 			} else $post_delete_error = true;
 		}
+
+		// load files already uploaded
 	}
 
 	//content includes
@@ -267,6 +285,10 @@
 			$('#machine-post').find('input[type="text"], input[type="hidden"], input[type="number"], textarea').val('');
 			$('ul.as-selections li.as-selection-item').remove(); // reset autoSuggest fields
 		}
+
+		$('.previously-uploaded').on('click',function(evt){
+			$(this).toggleClass('delete');
+		});
 
 	});
 
@@ -423,37 +445,41 @@
 				<!--<input id="image-1" type="file" name="image-1">-->
 			</fieldset>
 
-				<?php 
-			if (isset($_GET['post']) &&
-				!empty($_GET['post'])) {
-
-				$image_dir = 'images/machine/' . (int) $_GET['post'] . '/web';
-				
-				if (file_exists($image_dir)) {
-				
-				$image_names = preg_grep('/^([^.])/', scandir($image_dir));
-				?>
+		    <?php if (isset($image_names)): ?>
 				<div>
-					<?php foreach ($image_names as $image_name) { ?>
-					<img src="<?php echo $image_dir . "/" . $image_name?>" class="machine-image">
-					<?php } ?>
+					<?php foreach ($image_names as $image_name): ?>
+					<img src="<?php echo $image_dir . "/" . $image_name?>" class="machine-image previously-uploaded">
+					<?php endforeach; ?>
 				</div>
-			<?php }
-			} ?>
+			<?php endif; ?>
 			<button onclick="addImage(); return false;">Add Image</button>
 		</div>
 
 		<div id="thumbnail-upload-container">
+
 			<fieldset class="thumbnail-upload">
 				<label for="thumbnail">Thumbnail</label>
 				<input id="thumbnail" type="file" name="thumbnail">
 			</fieldset>
+
+			<?php if (isset($thumbnail_name) && $thumbnail_name != false): ?>
+				<div>
+					<img src="<?php echo $thumbnail_dir . "/" . $thumbnail_name?>" class="machine-thumbnail previously-uploaded">
+				</div>
+			<?php endif; ?>
 		</div>
 
 		<div id="bundle-upload-container">
 			<fieldset class="bundle-upload">
 				<label for="bundle-1">Bundles</label>
 			</fieldset>
+			<?php if (isset($bundle_names)): ?>
+				<div>
+					<?php foreach ($bundle_names as $bundle_name): ?>
+					<p class="bundle previously-uploaded"><?php echo $bundle_name?></p>
+					<?php endforeach; ?>
+				</div>
+			<?php endif; ?>
 			<button onclick="addBundle(); return false;">Add Bundle</button>
 		</div>
 
@@ -461,35 +487,6 @@
 
 	</form>
 
-	<!-- <form id="image-upload" enctype="multipart/form-data" class="admin" action="">
-		<div id="image-upload-container">
-
-			<fieldset class="image-upload">
-				<label for="image-1">Images</label> -->
-				<!--<input id="image-1" type="file" name="image-1">-->
-<!-- 			</fieldset>
-		</div>
-		<button onclick="addImage(); return false;">Add Image</button>
-	</form> -->
-
-	<!-- <form method="post" target="" id="manage-categories" class="admin">
-
-		<h2>Manage Categories</h2>
-
-		<p>Fields accept single values or comma-delimited lists</p>
-
-		<fieldset class="half">
-			<label for="form-new-category">Add Categories</label>
-			<input id="form-new-category"type="text" name="add_categories" autocomplete="off">
-		</fieldset>
-
-		<fieldset class="half">
-			<label for="form-delete-category">Remove Categories</label>
-			<input id="form-delete-category" type="text" name="delete_categories">
-		</fieldset>
-
-		<input type="submit" style="margin-top: 20px;" value="Update Categories">
-	</form> -->
 </div>
 <?php } else require_once 'includes/login_form.php'; ?>
 <?php require_once 'includes/footer.php' ?>

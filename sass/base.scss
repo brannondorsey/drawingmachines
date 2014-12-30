@@ -501,11 +501,23 @@ form.admin{
 		display: block;
 	}
 
-}
+	.previously-uploaded {
+		cursor: pointer;
+	}
 
-.machine-image {
+	.machine-image, .machine-thumbnail {
 		max-width: 200px;
 		max-height: 100px;
+	}
+
+	.delete {
+		opacity: .5;
+		text-decoration: line-through;
+	}
+
+	.bundle {
+		cursor: pointer;
+	}
 }
 
 .error{

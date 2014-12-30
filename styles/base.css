@@ -289,10 +289,16 @@ form.admin {
     font-size: 12pt;
     margin: auto;
     display: block; }
-
-.machine-image {
-  max-width: 200px;
-  max-height: 100px; }
+  form.admin .previously-uploaded {
+    cursor: pointer; }
+  form.admin .machine-image, form.admin .machine-thumbnail {
+    max-width: 200px;
+    max-height: 100px; }
+  form.admin .delete {
+    opacity: .5;
+    text-decoration: line-through; }
+  form.admin .bundle {
+    cursor: pointer; }
 
 .error {
   color: #c40a0a; }
