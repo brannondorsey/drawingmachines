@@ -436,7 +436,7 @@
 		    <?php if (isset($image_names)): ?>
 				<div>
 					<?php foreach ($image_names as $image_name): ?>
-					<img src="<?php echo urlencode($image_dir . "/" . $image_name)?>" class="machine-image previously-uploaded">
+					<img src="<?php echo $image_dir . "/" . $image_name?>" class="machine-image previously-uploaded">
 					<?php endforeach; ?>
 				</div>
 			<?php endif; ?>
