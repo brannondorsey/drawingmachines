@@ -133,9 +133,9 @@
 
 								$images_dir = "images/machine";
 								if (!file_exists($images_dir . "/" . $id)) mkdir($images_dir . "/" . $id);
-								if (!file_exists($images_dir . "/" . $id . "/thumbnail") mkdir($images_dir . "/" . $id . "/thumbnail");
-								if (!file_exists($images_dir . "/" . $id . "/bundle") mkdir($images_dir . "/" . $id . "/bundle");
-								if (!file_exists($images_dir . "/" . $id . "/web") mkdir($images_dir . "/" . $id . "/web");
+								if (!file_exists($images_dir . "/" . $id . "/thumbnail")) mkdir($images_dir . "/" . $id . "/thumbnail");
+								if (!file_exists($images_dir . "/" . $id . "/bundle")) mkdir($images_dir . "/" . $id . "/bundle");
+								if (!file_exists($images_dir . "/" . $id . "/web")) mkdir($images_dir . "/" . $id . "/web");
 								
 								$sub_folder = NULL;
 								
@@ -253,7 +253,6 @@
 		if(postSaved){
 			$('#machine-post').find('input[type="text"], input[type="hidden"], input[type="number"], textarea').val('');
 			$('ul.as-selections li.as-selection-item').remove(); // reset autoSuggest fields
-			console.log('done');
 		}
 
 	});
