@@ -28,4 +28,21 @@ function remove_char_from_tags(&$array, $char) {
 		 $array[$i]->name = ucfirst(ltrim(($array[$i]->name), $char));
 	}
 }
+
+function get_machine_thumbnail($machine) {
+
+	// dynamically read a thumbnail image filename
+ 	$thumbnail_dir = "images/machine/" . $machine->id . "/thumbnail";
+ 	$thumbnail_filename = NULL;
+
+ 	if (file_exists($thumbnail_dir)) {
+ 		$thumbnail_files = scandir($thumbnail_dir);
+	 	if (!empty($thumbnail_files)) {
+	 		$thumbnail_filename = $thumbnail_dir . "/" . $thumbnail_files[2]; // 2 is the first image
+	 	}
+ 	}
+
+ 	return ($thumbnail_filename != NULL) ? $thumbnail_filename : "";
+}
+
 ?>

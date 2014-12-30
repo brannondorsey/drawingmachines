@@ -17,7 +17,7 @@
 	 		
 	 		$machine = $resultsObj->data[0];
 	 		//var_dump($machine);
-	 		$images_dir = "images/machine_images/" . $machine->id;
+	 		$images_dir = "images/machine/" . $machine->id . "/web";
 	 		$has_images = is_dir($images_dir);
 	 		
 	 		if ($has_images) {
@@ -32,21 +32,18 @@
 					$extension = end($temp);
 
 					//if file is an image and not the thumbnail
-	 				if (strstr(strtolower($image_file), "thumbnail") === false &&
-	 					in_array(strtolower($extension), $allowed_extensions)) {
-	 					
+	 				if (in_array(strtolower($extension), $allowed_extensions)) {
+
 	 					//if this is the main image
 	 					if (strstr( strtolower($image_file), "main") !== false) {
-
 	 						//prepend array
 	 						array_unshift($image_paths, $images_dir . "/" . $image_file);
-	 					} else $image_paths[] = $images_dir . "/" . $image_file; //add to end of array
-	 				 					
+
+	 					} else $image_paths[] = $images_dir . "/" . $image_file; //add to end of array				
 	 				}
 	 			}
 	 		}
-	 		
-
+	 	
 	 	} else {
 	 		//error or not found
 	 		header("Location: " . $HOSTNAME);

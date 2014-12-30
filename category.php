@@ -1,6 +1,7 @@
 <?php 
 	require_once "includes/classes/class.API.inc.php";
 	require_once "includes/config.php";
+	require_once "includes/helpers.php";
 	require_once "includes/classes/markdown/Markdown.inc.php";
 
 	$category_columns = 
@@ -50,7 +51,7 @@
 	if ($category_obj == NULL) header( 'Location: ' . $HOSTNAME);
 
 	$image_safe_name = str_replace("/", "-", $category_obj->category);
-	$image_file = "images/category_images/thumb/" . $image_safe_name . " Thumb.png";
+	$image_file = "images/category/thumbnail/" . $image_safe_name . " Thumb.png";
 
 	require_once "includes/header.php";
 	require_once "includes/menu.php";
@@ -68,7 +69,7 @@
 	<div class="machine-results-container">
 		<?php foreach($machine_results as $machine):?>
 		<div class="result" data-id="<?php echo $machine->id?>">
-			<img src="<?php echo "images/machine_images/" . $machine->id . "/thumbnail.png"?>">
+			<img src="<?php echo get_machine_thumbnail($machine)?>">
 			<h3><?php if (isset($machine->device_name)) echo $machine->device_name?></h3>
 			<h4><?php if (isset($machine->inventor)) echo $machine->inventor?></h4>
 			<h4><?php if (isset($machine->circa)) echo "Circa "; if (isset($machine->year)) echo $machine->year?></h4>

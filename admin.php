@@ -131,10 +131,22 @@
 
 							if ($_FILES[$key]["error"] == 0) {
 
-								$images_dir = "images/machine_images";
+								$images_dir = "images/machine";
 								if (!file_exists($images_dir . "/" . $id)) mkdir($images_dir . "/" . $id);
-								$file_upload_success = move_uploaded_file($_FILES[$key]["tmp_name"], $images_dir . "/" . $id . "/" . $_FILES[$key]["name"]);
+								if (!file_exists($images_dir . "/" . $id . "/thumbnail") mkdir($images_dir . "/" . $id . "/thumbnail");
+								if (!file_exists($images_dir . "/" . $id . "/bundle") mkdir($images_dir . "/" . $id . "/bundle");
+								if (!file_exists($images_dir . "/" . $id . "/web") mkdir($images_dir . "/" . $id . "/web");
 								
+								$sub_folder = NULL;
+								
+								if (preg_match('/^image-\d+/', $key) == 1) $sub_folder = "web";
+								else if ($key == "thumbnail") $sub_folder = "thumbnail";
+								else if ($key == "bundle") $sub_folder = "bundle";
+
+								if ($sub_folder != NULL) {
+									$file_upload_success = move_uploaded_file($_FILES[$key]["tmp_name"], $images_dir . "/" . $id . "/" . $sub_folder . "/" . $_FILES[$key]["name"]);
+								} else $file_upload_success = false;
+
 							} else $file_upload_success = false;
 
 							if ($file_upload_success) unset($image_error);
@@ -169,7 +181,7 @@
 			$query = "DELETE FROM " . Database::$table . " WHERE id='" . (int) $_GET['delete'] . "' LIMIT 1";
 			if (Database::execute_sql($query)) {
 				$post_deleted = true;
-				shell_exec('rm -rf images/machine_images/' . (int) $_GET['delete']);
+				shell_exec('rm -rf images/machine/' . (int) $_GET['delete']);
 			} else $post_delete_error = true;
 		}
 	}
@@ -253,7 +265,7 @@
 		var imageNumber = imageUploadContainer.children().length;
 		imageNumber++;
 		var html = '<fieldset><input id="image-' + imageNumber + '" type="file" name="image-' + imageNumber + '"></fieldset>';
-		$('#image-upload-container').append(html);
+		$('#image-upload-container:last').append(html);
 	}
 
 	function loadPost(){
@@ -392,7 +404,7 @@
 			if (isset($_GET['post']) &&
 				!empty($_GET['post'])) {
 
-				$image_dir = 'images/machine_images/' . (int) $_GET['post'];
+				$image_dir = 'images/machine/' . (int) $_GET['post'] . '/web';
 				
 				if (file_exists($image_dir)) {
 				
@@ -405,9 +417,15 @@
 				</div>
 			<?php }
 			} ?>
+			<button onclick="addImage(); return false;">Add Image</button>
 		</div>
 
-		<button onclick="addImage(); return false;">Add Image</button>
+		<div id="thumbnail-upload-container">
+			<fieldset class="thumbnail-upload">
+				<label for="image-1">Thumbnail</label>
+				<input id="thumbnail" type="file" name="thumbnail">
+			</fieldset>
+		</div>
 
 		<input type="submit" value="Save">
 

@@ -70,7 +70,7 @@
 			$categoryObj = $categories[$class][$j];
 			$image_safe_name = utf8_encode($categoryObj->category);
 			$image_safe_name = str_replace("/", "-", $categoryObj->category);
-			$image_file = "images/category_images/thumb/" . $image_safe_name . " Thumb.png"?>
+			$image_file = "images/category/thumbnail/" . $image_safe_name . " Thumb.png"?>
 		<a href="category.php?id=<?php echo $categoryObj->id?>">
 			<div class="category-box">
 				<div class="category-name hidden"><?php echo $categoryObj->category ?></div>

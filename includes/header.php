@@ -14,8 +14,3 @@
   </head>
 
   <body>
-
-    <header>
-      <h1><a href="index.php">DrawingMachines.org</a></h1>
-      <div id="description"><?php echo $site_description; ?></div>
-    </header>
