@@ -4,9 +4,12 @@
 	require_once 'includes/classes/class.Session.inc.php';
 	require_once 'includes/classes/class.FormValidator.php';
 	require_once 'includes/classes/class.Autocomplete.php';
+	require_once 'includes/classes/class.Upload.php';
 	require_once 'includes/helpers.php';
 	
 	require_once 'includes/database_connect.php';
+
+	phpinfo();
 
 	Session::start();
 
@@ -120,36 +123,46 @@
 						}
 					}
 
-					//save images
+					//save uploaded files
 					if ($id != NULL &&
 						isset($_FILES) &&
 						!empty($_FILES)) {
 
+						// create folders if they do not already exist
+						$images_dir = "images/machine";
+						if (!file_exists($images_dir . "/" . $id)) mkdir($images_dir . "/" . $id);
+						if (!file_exists($images_dir . "/" . $id . "/thumbnail")) mkdir($images_dir . "/" . $id . "/thumbnail");
+						if (!file_exists($images_dir . "/" . $id . "/bundle")) mkdir($images_dir . "/" . $id . "/bundle");
+						if (!file_exists($images_dir . "/" . $id . "/web")) mkdir($images_dir . "/" . $id . "/web");
+
 						foreach ($_FILES as $key => $value) {
 
-							$file_upload_success = false;
+							$results = NULL;
 
-							if ($_FILES[$key]["error"] == 0) {
+							if (!empty($_FILES[$key]['name'])) {
 
-								$images_dir = "images/machine";
-								if (!file_exists($images_dir . "/" . $id)) mkdir($images_dir . "/" . $id);
-								if (!file_exists($images_dir . "/" . $id . "/thumbnail")) mkdir($images_dir . "/" . $id . "/thumbnail");
-								if (!file_exists($images_dir . "/" . $id . "/bundle")) mkdir($images_dir . "/" . $id . "/bundle");
-								if (!file_exists($images_dir . "/" . $id . "/web")) mkdir($images_dir . "/" . $id . "/web");
-								
-								$sub_folder = NULL;
-								
-								if (preg_match('/^image-\d+/', $key) == 1) $sub_folder = "web";
-								else if ($key == "thumbnail") $sub_folder = "thumbnail";
-								else if ($key == "bundle") $sub_folder = "bundle";
+								if ($key == "thumbnail") {
 
-								if ($sub_folder != NULL) {
-									$file_upload_success = move_uploaded_file($_FILES[$key]["tmp_name"], $images_dir . "/" . $id . "/" . $sub_folder . "/" . $_FILES[$key]["name"]);
-								} else $file_upload_success = false;
+									$sub_folder = "thumbnail";
+									$mime_types = array('image/jpeg', 'image/png');
+									$results = upload_file($images_dir . "/" . $id . "/" . $sub_folder, $file, 2, $mime_types);
 
-							} else $file_upload_success = false;
+								} else if (preg_match('/^image-\d+/', $key) == 1) {
 
-							if ($file_upload_success) unset($image_error);
+									$sub_folder = "web";
+									$mime_types = array('image/jpeg', 'image/png');
+									$results = upload_file($images_dir . "/" . $id . "/" . $sub_folder, $file, 5, $mime_types);
+
+								} else if (preg_match('/^bundle-\d+/', $key) == 1) {
+
+									$sub_folder = "bundle";
+									$mime_types = array('application/zip');
+									$results = upload_file($images_dir . "/" . $id . "/" . $sub_folder, $file, 100, $mime_types);
+								}
+
+							}
+
+							if ($results != NULL && $results["status"]) unset($image_error);
 							else header("Location: " . $HOSTNAME . "/admin.php?post=" . $id . "&image_error=true");
 						}
 					}
@@ -265,6 +278,17 @@
 		imageNumber++;
 		var html = '<fieldset><input id="image-' + imageNumber + '" type="file" name="image-' + imageNumber + '"></fieldset>';
 		$('#image-upload-container:last').append(html);
+	}
+
+	function addBundle() {
+
+		var bundleFieldset = $('.bundle-upload').last();
+		var bundleUploadContainer = $('#bundle-upload-container');
+		var bundleNumber = bundleUploadContainer.children().length;
+		bundleNumber++;
+		var html = '<fieldset><input id="bundle-' + bundleNumber + '" type="file" name="bundle-' + bundleNumber + '"></fieldset>';
+		$('#bundle-upload-container:last').append(html);
+
 	}
 
 	function loadPost(){
@@ -421,9 +445,16 @@
 
 		<div id="thumbnail-upload-container">
 			<fieldset class="thumbnail-upload">
-				<label for="image-1">Thumbnail</label>
+				<label for="thumbnail">Thumbnail</label>
 				<input id="thumbnail" type="file" name="thumbnail">
 			</fieldset>
+		</div>
+
+		<div id="bundle-upload-container">
+			<fieldset class="bundle-upload">
+				<label for="bundle-1">Bundles</label>
+			</fieldset>
+			<button onclick="addBundle(); return false;">Add Bundle</button>
 		</div>
 
 		<input type="submit" value="Save">

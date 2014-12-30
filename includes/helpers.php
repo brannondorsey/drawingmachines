@@ -1,4 +1,6 @@
 <?php
+require_once 'classes/class.Upload.php';
+
 function commas_to_array($string) {
 
 	$raw_output = explode(",", $string);
@@ -43,6 +45,15 @@ function get_machine_thumbnail($machine) {
  	}
 
  	return ($thumbnail_filename != NULL) ? $thumbnail_filename : "";
+}
+
+function upload_file($destination_folder, $file, $size, $mime_types) {
+
+	$upload = Upload::factory($destination_folder);
+	$upload->file($file);
+	$upload->set_max_file_size($size);
+	$upload->set_allowed_mime_types($mime_types);
+	return $upload->upload($file['name']);
 }
 
 ?>
