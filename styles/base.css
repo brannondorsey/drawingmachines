@@ -298,7 +298,8 @@ form.admin {
     opacity: .5;
     text-decoration: line-through; }
   form.admin .bundle {
-    cursor: pointer; }
+    cursor: pointer;
+    border: 1px dashed black; }
 
 .error {
   color: #c40a0a; }

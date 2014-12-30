@@ -73,20 +73,6 @@
 			        $autocomplete->add_list_to_table($post['tags']);
 				}
 
-				//add new categories to database
-				if(isset($post['add_categories'])){
-					$autocomplete = new Autocomplete('category', 'categories');
-			        $autocomplete->add_list_to_table($categories);
-			        $categories_saved = true;
-				}
-
-				//delete categories from database
-				if(isset($post['delete_categories'])){
-					$autocomplete = new Autocomplete('category', 'categories');
-			        $autocomplete->add_list_to_table($categories);
-			        $categories_saved = true;
-				}
-
 				//add post content to database
 				if(isset($post['device_name'])){
 
@@ -135,9 +121,9 @@
 
 						foreach ($_FILES as $key => $value) {
 
-							$results = NULL;
-
 							if (!empty($_FILES[$key]['name'])) {
+
+								$results = NULL;
 
 								if ($key == "thumbnail") {
 
@@ -158,10 +144,9 @@
 									$results = upload_file($images_dir . "/" . $id . "/" . $sub_folder, $_FILES[$key], 100, $mime_types);
 								}
 
+								if ($results != NULL && $results["status"]) unset($image_error);
+								else header("Location: " . $HOSTNAME . "/admin.php?post=" . $id . "&image_error=true");
 							}
-
-							if ($results != NULL && $results["status"]) unset($image_error);
-							else header("Location: " . $HOSTNAME . "/admin.php?post=" . $id . "&image_error=true");
 						}
 					}
 				}
@@ -281,10 +266,10 @@
 		$('#as-values-add-categories-input').attr('name', 'add_categories');
 		$('#as-values-delete-categories-input').attr('name', 'delete_categories');
 
-		if(postSaved){
-			$('#machine-post').find('input[type="text"], input[type="hidden"], input[type="number"], textarea').val('');
-			$('ul.as-selections li.as-selection-item').remove(); // reset autoSuggest fields
-		}
+		// if(postSaved){
+		// 	$('#machine-post').find('input[type="text"], input[type="hidden"], input[type="number"], textarea').val('');
+		// 	$('ul.as-selections li.as-selection-item').remove(); // reset autoSuggest fields
+		// }
 
 		$('.previously-uploaded').on('click',function(evt){
 			$(this).toggleClass('delete');
@@ -341,6 +326,11 @@
 
 		return false; //don't submit the form
 	}
+
+	function newPost() {
+		window.location.href = hostname + '/admin.php';
+	}
+
 </script>
 
 <div class="content">
@@ -352,9 +342,6 @@
 		}
 		if (isset($post_saved)) {
 			echo "<p class='success' style='text-align:center'>Post Saved, click <a href='post.php?id=" . $id . "' target='_blank' style='color:inherit;'>here</a> to view.</p>";
-		}
-		if (isset($categories_saved)) {
-			echo "<p class='success' style='text-align:center'>Categories Updated</p>";
 		}
 		if (isset($post_deleted)) {
 			echo "<p class='success' style='text-align:center'>Post Deleted</p>";
@@ -374,6 +361,7 @@
 			<label for="load-post">Load Post #</label>
 			<input id="load-post" type="number" min="1" name="load_post" style="width: 70px; margin-right: 5px;">
 			<input type="button" value="Load" onclick="return loadPost();">
+			<input type="button" value="New Post" onclick="newPost(); return false;">
 		</fieldset>
 
 		<button id="form-delete" onclick="return deletePost()">Delete</button>
