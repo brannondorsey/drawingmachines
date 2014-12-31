@@ -12,9 +12,9 @@
 	Session::start();
 
 	// this should be checked first
-	if (isset($_GET['image_error']) &&
-		!empty($_GET['image_error'])) {
-		$image_error = true;
+	if (isset($_GET['upload_error']) &&
+		!empty($_GET['upload_error'])) {
+		$upload_error = true;
 	}
 
 	if(isset($_POST) &&
@@ -47,17 +47,17 @@
 			        $rules['source_line_2'] = array('display'=>'Source line 2', 'type'=>'string', 'required'=> false, 'min'=>1, 'max'=>255, 'trim'=>true);
 			}
 
-			//if post is from a new categories
-			if(isset($post['add_categories']) &&
-			   !empty($post['add_categories'])){
-				$rules['add_categories'] = array('display' => 'Add Categories', 'type'=>'string',  'required'=>false, 'min'=>2, 'max'=>99999, 'trim'=>true);
-			}
+			// //if post is from a new categories
+			// if(isset($post['add_categories']) &&
+			//    !empty($post['add_categories'])){
+			// 	$rules['add_categories'] = array('display' => 'Add Categories', 'type'=>'string',  'required'=>false, 'min'=>2, 'max'=>99999, 'trim'=>true);
+			// }
 
-			//if post is to remove a new categories
-			if(isset($post['delete_categories']) &&
-			   !empty($post['delete_categories'])){
-				$rules['delete_categories'] = array('display' => 'Remove Categories', 'type'=>'string',  'required'=>false, 'min'=>2, 'max'=>99999, 'trim'=>true);
-			}
+			// //if post is to remove a new categories
+			// if(isset($post['delete_categories']) &&
+			//    !empty($post['delete_categories'])){
+			// 	$rules['delete_categories'] = array('display' => 'Remove Categories', 'type'=>'string',  'required'=>false, 'min'=>2, 'max'=>99999, 'trim'=>true);
+			// }
 			
 			$validator = new FormValidator();
 			$validator->addSource($post);
@@ -73,7 +73,7 @@
 			        $autocomplete->add_list_to_table($post['tags']);
 				}
 
-				//add post content to database
+				// add post content to database
 				if(isset($post['device_name'])){
 
 					$id = NULL;
@@ -106,51 +106,78 @@
 							$id = (int) $results[0]['id'];
 						}
 					}
+				}				
+			}
 
-					//save uploaded files
-					if ($id != NULL &&
-						isset($_FILES) &&
-						!empty($_FILES)) {
+			// handle files independent of validation
+			if ($id != NULL &&
+				isset($_FILES) &&
+				!empty($_FILES)) {
 
-						// create folders if they do not already exist
-						$images_dir = "images/machine";
-						if (!file_exists($images_dir . "/" . $id)) mkdir($images_dir . "/" . $id);
-						if (!file_exists($images_dir . "/" . $id . "/thumbnail")) mkdir($images_dir . "/" . $id . "/thumbnail");
-						if (!file_exists($images_dir . "/" . $id . "/bundle")) mkdir($images_dir . "/" . $id . "/bundle");
-						if (!file_exists($images_dir . "/" . $id . "/web")) mkdir($images_dir . "/" . $id . "/web");
+				// create folders if they do not already exist
+				$images_dir = "images/machine";
+				if (!file_exists($images_dir . "/" . $id)) mkdir($images_dir . "/" . $id);
+				if (!file_exists($images_dir . "/" . $id . "/thumbnail")) mkdir($images_dir . "/" . $id . "/thumbnail");
+				if (!file_exists($images_dir . "/" . $id . "/bundle")) mkdir($images_dir . "/" . $id . "/bundle");
+				if (!file_exists($images_dir . "/" . $id . "/web")) mkdir($images_dir . "/" . $id . "/web");
 
-						foreach ($_FILES as $key => $value) {
+				foreach ($_FILES as $key => $value) {
 
-							if (!empty($_FILES[$key]['name'])) {
+					if (!empty($_FILES[$key]['name'])) {
 
-								$results = NULL;
+						$results = NULL;
 
-								if ($key == "thumbnail") {
+						if ($key == "thumbnail") {
 
-									$sub_folder = "thumbnail";
-									$mime_types = array('image/jpeg', 'image/png');
-									$results = upload_file($images_dir . "/" . $id . "/" . $sub_folder, $_FILES[$key], 2, $mime_types);
+							$sub_folder = "thumbnail";
+							$mime_types = array('image/jpeg', 'image/png');
+							$results = upload_file($images_dir . "/" . $id . "/" . $sub_folder, $_FILES[$key], 2, $mime_types);
 
-								} else if (preg_match('/^image-\d+/', $key) == 1) {
+						} else if (preg_match('/^image-\d+/', $key) == 1) {
 
-									$sub_folder = "web";
-									$mime_types = array('image/jpeg', 'image/png');
-									$results = upload_file($images_dir . "/" . $id . "/" . $sub_folder, $_FILES[$key], 5, $mime_types);
+							$sub_folder = "web";
+							$mime_types = array('image/jpeg', 'image/png');
+							$results = upload_file($images_dir . "/" . $id . "/" . $sub_folder, $_FILES[$key], 5, $mime_types);
 
-								} else if (preg_match('/^bundle-\d+/', $key) == 1) {
+						} else if (preg_match('/^bundle-\d+/', $key) == 1) {
 
-									$sub_folder = "bundle";
-									$mime_types = array('application/zip');
-									$results = upload_file($images_dir . "/" . $id . "/" . $sub_folder, $_FILES[$key], 100, $mime_types);
-								}
-
-								if ($results != NULL && $results["status"]) unset($image_error);
-								else header("Location: " . $HOSTNAME . "/admin.php?post=" . $id . "&image_error=true");
-							}
+							$sub_folder = "bundle";
+							$mime_types = array('application/zip');
+							$results = upload_file($images_dir . "/" . $id . "/" . $sub_folder, $_FILES[$key], 100, $mime_types);
 						}
+
+						if ($results != NULL && $results["status"]) unset($upload_error);
+						else header("Location: " . $HOSTNAME . "/admin.php?post=" . $id . "&upload_error=true");
 					}
 				}
 			}
+
+			// delete files
+			$post_keys = array_keys($post);
+			$delete_keys = preg_grep('/^delete-\d+/', $post_keys);
+			
+			if (!empty($delete_keys)) {
+				
+				$file_delete_failed = false;
+
+				foreach ($delete_keys as $key) {
+					
+					// http://stackoverflow.com/questions/16234860/cut-string-in-php-at-nth-from-end-occurrence-of-character
+					$filename = realpath($post[$key]);
+					
+					$exploded_name = explode('/', $filename);
+					$exploded_trimmed = array_slice($exploded_name, -5);
+					
+					$filename = implode('/', $exploded_trimmed);
+
+					if (preg_match('/^images\/machine/', $filename) === 1 &&
+						file_exists($filename)) {
+						
+						if (!unlink($filename)) $file_delete_failed = true;
+
+					} else $file_delete_failed = true;
+				}
+			}	
 		}
 	}
 
@@ -272,7 +299,14 @@
 		// }
 
 		$('.previously-uploaded').on('click',function(evt){
+
 			$(this).toggleClass('delete');
+			var filename = $(this).attr('data-filepath');
+			var fileNumber = $('.file-delete').size();
+			fileNumber++;
+			var html = '<input type="text" class="file-delete" name="delete-' + fileNumber + '" value="' + filename + '" style="display: none;"></input>';
+			$('#machine-post').append(html);
+			console.log(html);
 		});
 
 	});
@@ -349,8 +383,11 @@
 		if (isset($post_delete_error)) {
 			echo "<p class='error' style='text-align:center'>Post Not Deleted</p>";
 		}
-		if (isset($image_error)) {
-			echo "<p class='error' style='text-align:center'>Error saving images</p>";
+		if (isset($upload_error)) {
+			echo "<p class='error' style='text-align:center'>Error Updating Post</p>";
+		}
+		if (isset($file_delete_failed) && $file_delete_failed) {
+			echo "<p class='error' style='text-align:center'>Error Deleting File</p>";
 		}
 	?>
 
@@ -436,7 +473,7 @@
 		    <?php if (isset($image_names)): ?>
 				<div>
 					<?php foreach ($image_names as $image_name): ?>
-					<img src="<?php echo $image_dir . "/" . $image_name?>" class="machine-image previously-uploaded">
+					<img src="<?php echo $image_dir . "/" . $image_name?>" class="machine-image previously-uploaded" data-filepath="<?php echo $image_dir . "/" . $image_name?>">
 					<?php endforeach; ?>
 				</div>
 			<?php endif; ?>
@@ -452,7 +489,7 @@
 
 			<?php if (isset($thumbnail_name) && $thumbnail_name != false): ?>
 				<div>
-					<img src="<?php echo $thumbnail_dir . "/" . $thumbnail_name?>" class="machine-thumbnail previously-uploaded">
+					<img src="<?php echo $thumbnail_dir . "/" . $thumbnail_name?>" class="machine-thumbnail previously-uploaded" data-filepath="<?php echo $thumbnail_dir . "/" . $thumbnail_name?>">
 				</div>
 			<?php endif; ?>
 		</div>
@@ -464,7 +501,7 @@
 			<?php if (isset($bundle_names)): ?>
 				<div>
 					<?php foreach ($bundle_names as $bundle_name): ?>
-					<p class="bundle previously-uploaded"><?php echo $bundle_name?></p>
+					<p class="bundle previously-uploaded" data-filepath="<?php echo $bundle_dir . "/" . $thumbnail_name ?>"><?php echo $bundle_name?></p>
 					<?php endforeach; ?>
 				</div>
 			<?php endif; ?>
