@@ -3,6 +3,7 @@
 	 require_once "includes/database_connect.php";
 	 require_once "includes/config.php";
 	 require_once "includes/classes/markdown/Markdown.inc.php";
+	 require_once "includes/helpers.php";
 
 	 if (isset($_GET['id']) &&
 	 	 !empty($_GET['id'])) {
@@ -12,10 +13,10 @@
 	 		"limit" => 1
 	 	);
 
-	 	$resultsObj = json_decode($api->get_json_from_assoc($query_array));
-	 	if (isset($resultsObj->data[0])) {
+	 	$results_obj = json_decode($api->get_json_from_assoc($query_array));
+	 	if (isset($results_obj->data[0])) {
 	 		
-	 		$machine = $resultsObj->data[0];
+	 		$machine = $results_obj->data[0];
 	 		//var_dump($machine);
 	 		$images_dir = "images/machine/" . $machine->id . "/web";
 	 		$has_images = is_dir($images_dir);
@@ -43,6 +44,19 @@
 	 				}
 	 			}
 	 		}
+
+	 		$bundle_dir = "images/machine/" . $machine->id . "/bundle";
+	 		$has_bundles = false;
+	 		$bundle_names = array();
+	 		$bundle_sizes = array();
+
+	 		if (is_dir($bundle_dir)) $bundle_names = preg_grep('/^([^.])/', scandir($bundle_dir));
+	 		if (!empty($bundle_names)) { 
+	 			$has_bundles = true;
+	 			foreach ($bundle_names as $bundle_name) {
+	 				$bundle_sizes[$bundle_name] = filesize_formatted($bundle_dir . "/" . $bundle_name);
+	 			}
+	 		}
 	 	
 	 	} else {
 	 		//error or not found
@@ -53,7 +67,6 @@
 
 	 require_once "includes/header.php";
 	 require_once "includes/menu.php";
-	 require_once "includes/helpers.php"; 
 ?>
 <script>
 	$(document).ready(function(){
@@ -85,14 +98,16 @@
 	</div>
 	<?php endif ?>
 	<div class="sidebar-container">
+		<?php if (isset($has_bundles) && $has_bundles): ?>
 		<div>
-			<h4>Download Images</h4>
+			<h4>Download Files</h4>
 			<ul>
-				<li><a href="#">Small</a> [56KB .jpg]</li>
-				<li><a href="#">Large</a> [1MB .jpg]</li>
-				<li><a href="#">Original Resolution</a> [7MB .jpg]</li>
+				<?php foreach($bundle_names as $bundle_name) {
+					echo "<li><a href='" . $bundle_dir . "/" . $bundle_name . "'>$bundle_name</a> [" . $bundle_sizes[$bundle_name] . "]</li>";
+				} ?>
 			</ul>
 		</div>
+		<?php endif?>
 		<?php if (isset($machine->category)):
 		?>
 		<div>

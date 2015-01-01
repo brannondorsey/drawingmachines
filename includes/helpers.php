@@ -57,4 +57,29 @@ function upload_file($destination_folder, $file, $size, $mime_types) {
 	return $upload->upload();
 }
 
+/**
+ * Formats filesize in human readable way.
+ *
+ * @param file $file
+ * @return string Formatted Filesize, e.g. "113.24 MB".
+ */
+function filesize_formatted($file)
+{
+    $bytes = filesize($file);
+
+    if ($bytes >= 1073741824) {
+        return number_format($bytes / 1073741824, 2) . ' GB';
+    } elseif ($bytes >= 1048576) {
+        return number_format($bytes / 1048576, 2) . ' MB';
+    } elseif ($bytes >= 1024) {
+        return number_format($bytes / 1024, 2) . ' KB';
+    } elseif ($bytes > 1) {
+        return $bytes . ' bytes';
+    } elseif ($bytes == 1) {
+        return '1 byte';
+    } else {
+        return '0 bytes';
+    }
+}
+
 ?>
