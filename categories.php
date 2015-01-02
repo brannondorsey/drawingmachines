@@ -53,7 +53,7 @@
 <script>
 	$(document).ready(function(){
 		$('.category-box').on('mouseout mouseover', function(evt){
-			$(this).find('.category-name').toggleClass('hidden');
+			// $(this).find('.category-name').toggleClass('hidden');
 		});
 	});
 </script>
@@ -73,7 +73,7 @@
 			$image_file = "images/category/thumbnail/" . $image_safe_name . " Thumb.png"?>
 		<a href="category.php?id=<?php echo $categoryObj->id?>">
 			<div class="category-box">
-				<div class="category-name hidden"><?php echo $categoryObj->category ?></div>
+				<div class="category-name">&nbsp<?php echo $categoryObj->category ?></div>
 				<img src="<?php echo $image_file?>">
 			</div>
 		</a>

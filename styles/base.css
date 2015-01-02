@@ -121,8 +121,7 @@ header {
     width: 100%;
     bottom: 0;
     font-weight: 100;
-    padding: 5px 0px;
-    text-align: center; }
+    padding: 5px 0px; }
   .categories-layout .category-box .hidden {
     display: none; }
   .categories-layout .category-box img {
