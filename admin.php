@@ -112,8 +112,6 @@
 				}				
 			}
 
-			var_dump($post);
-
 			// handle files independent of validation
 			if (isset($id) &&
 				$id != NULL &&
@@ -379,8 +377,10 @@
 	}
 
 	function onSave() {
+		
 		var tags = $('#as-values-tags-input').attr('value');
-		$('#as-values-tags-input').attr('value', tags.replace(/,+$/,''));
+		tags = tags.replace(/^,+|,+$/g,'');
+		$('#as-values-tags-input').attr('value', tags);
 	}
 
 </script>
@@ -468,7 +468,7 @@
 		</fieldset>
 
 		<fieldset>
-			<label for="form-tags">Tags (seperated by commas) <?php if(isset($validator->errors['tags'])) echo "<spand class='error'>*</span>"; ?></label>
+			<label for="form-tags">Tags (prepended by "#"s, seperated by commas) <?php if(isset($validator->errors['tags'])) echo "<spand class='error'>*</span>"; ?></label>
 			<input id="form-tags" type="text" name="tags">
 		</fieldset>
 
@@ -527,7 +527,7 @@
 			<button onclick="addBundle(); return false;">Add Bundle</button>
 		</div>
 
-		<input type="submit" value="Save" onsubmit="onSave();">
+		<input type="submit" value="Save" onclick="onSave();" >
 
 	</form>
 

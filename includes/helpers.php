@@ -38,7 +38,7 @@ function get_machine_thumbnail($machine) {
  	$thumbnail_filename = NULL;
 
  	if (file_exists($thumbnail_dir)) {
- 		$thumbnail_files = scandir($thumbnail_dir);
+ 		$thumbnail_files = preg_grep('/^([^.])/', scandir($thumbnail_dir));
 	 	if (!empty($thumbnail_files)) {
 	 		$thumbnail_filename = $thumbnail_dir . "/" . $thumbnail_files[2]; // 2 is the first image
 	 	}
