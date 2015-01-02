@@ -11,10 +11,20 @@
 
 	Session::start();
 
-	// this should be checked first
+	// these should be checked first
 	if (isset($_GET['upload_error']) &&
 		!empty($_GET['upload_error'])) {
 		$upload_error = true;
+	}
+
+	if (isset($_GET['post_saved']) &&
+		!empty($_GET['post_saved'])) {
+		$post_saved = true;
+	}
+
+	if (isset($_GET['post_deleted']) &&
+		!empty($_GET['post_deleted'])) {
+		$post_deleted = true;
 	}
 
 	if(isset($_POST) &&
@@ -46,18 +56,6 @@
 			        $rules['source'] = array('display'=>'Source', 'type'=>'string',  'required'=> true, 'min'=>2, 'max'=>255, 'trim'=>true);
 			        $rules['source_line_2'] = array('display'=>'Source line 2', 'type'=>'string', 'required'=> false, 'min'=>1, 'max'=>255, 'trim'=>true);
 			}
-
-			// //if post is from a new categories
-			// if(isset($post['add_categories']) &&
-			//    !empty($post['add_categories'])){
-			// 	$rules['add_categories'] = array('display' => 'Add Categories', 'type'=>'string',  'required'=>false, 'min'=>2, 'max'=>99999, 'trim'=>true);
-			// }
-
-			// //if post is to remove a new categories
-			// if(isset($post['delete_categories']) &&
-			//    !empty($post['delete_categories'])){
-			// 	$rules['delete_categories'] = array('display' => 'Remove Categories', 'type'=>'string',  'required'=>false, 'min'=>2, 'max'=>99999, 'trim'=>true);
-			// }
 			
 			$validator = new FormValidator();
 			$validator->addSource($post);
@@ -95,8 +93,12 @@
 							//results saved...
 							$post_saved = true;
 						}
-					} else { //if this is a new post
 
+						$post['id'] = $id;
+
+					} else { //if this is a new post
+						
+						$id = $post['id'];
 						unset($post['id']);
 						if(Database::execute_from_assoc($post, Database::$table)){
 							//results saved...
@@ -105,12 +107,16 @@
 							$results = Database::get_all_results($query);
 							$id = (int) $results[0]['id'];
 						}
+						$post['id'] = $id;
 					}
 				}				
 			}
 
+			var_dump($post);
+
 			// handle files independent of validation
-			if ($id != NULL &&
+			if (isset($id) &&
+				$id != NULL &&
 				isset($_FILES) &&
 				!empty($_FILES)) {
 
@@ -191,29 +197,33 @@
 		 		'limit' => '1'
 			);
 
+		 	$id = (int) $_GET['post'];
+
 		 	$results = json_decode($api->get_json_from_assoc($api_array));
 		 	
 		 	if (isset($results->data)) {
 
 		 		$loaded_post_obj = $results->data[0];
-
-		 		// load files already updated
-		 		$image_dir = 'images/machine/' . (int) $_GET['post'] . '/web';
-		 		$thumbnail_dir = 'images/machine/' . (int) $_GET['post'] . '/thumbnail';
-		 		$bundle_dir = 'images/machine/' . (int) $_GET['post'] . '/bundle';
-
-		 		if (file_exists($image_dir)) {
-					$image_names = preg_grep('/^([^.])/', scandir($image_dir));
-				}
-				
-				if (file_exists($thumbnail_dir)) {
-					$thumbnail_name = current(preg_grep('/^([^.])/', scandir($thumbnail_dir)));
-				}
-
-				if (file_exists($image_dir)) {
-					$bundle_names = preg_grep('/^([^.])/', scandir($bundle_dir));
-				}
 		 	}
+		}
+
+		if (isset($id) && $id != NULL) {
+			// load files already updated
+	 		$image_dir = 'images/machine/' . $id . '/web';
+	 		$thumbnail_dir = 'images/machine/' . $id . '/thumbnail';
+	 		$bundle_dir = 'images/machine/' . $id . '/bundle';
+
+	 		if (file_exists($image_dir)) {
+				$image_names = preg_grep('/^([^.])/', scandir($image_dir));
+			}
+			
+			if (file_exists($thumbnail_dir)) {
+				$thumbnail_name = current(preg_grep('/^([^.])/', scandir($thumbnail_dir)));
+			}
+
+			if (file_exists($image_dir)) {
+				$bundle_names = preg_grep('/^([^.])/', scandir($bundle_dir));
+			}
 		}
 
 		if (isset($_GET['delete']) &&
@@ -223,7 +233,10 @@
 			if (Database::execute_sql($query)) {
 				$post_deleted = true;
 				shell_exec('rm -rf images/machine/' . (int) $_GET['delete']);
-			} else $post_delete_error = true;
+				header("Location: " . $HOSTNAME . "/admin.php?post_deleted=true");
+			} else {
+				$post_deleted = false;
+			}
 		}
 
 		// load files already uploaded
@@ -365,6 +378,11 @@
 		window.location.href = hostname + '/admin.php';
 	}
 
+	function onSave() {
+		var tags = $('#as-values-tags-input').attr('value');
+		$('#as-values-tags-input').attr('value', tags.replace(/,+$/,''));
+	}
+
 </script>
 
 <div class="content">
@@ -372,15 +390,16 @@
 	<?php 
 		if (isset($validator->errors) &&
 			 sizeof($validator->errors) > 0) {
+			$post_saved = false;
 			echo "<p class='error' style='text-align:center'>Oops, looks like there were some errors with your post. Check out the asterisks.</p>";
 		}
-		if (isset($post_saved)) {
+		if (isset($post_saved) && $post_saved && isset($id)) {
 			echo "<p class='success' style='text-align:center'>Post Saved, click <a href='post.php?id=" . $id . "' target='_blank' style='color:inherit;'>here</a> to view.</p>";
 		}
-		if (isset($post_deleted)) {
+		if (isset($post_deleted) && $post_deleted) {
 			echo "<p class='success' style='text-align:center'>Post Deleted</p>";
 		}
-		if (isset($post_delete_error)) {
+		if (isset($post_deleted) && !$post_deleted) {
 			echo "<p class='error' style='text-align:center'>Post Not Deleted</p>";
 		}
 		if (isset($upload_error)) {
@@ -401,12 +420,12 @@
 			<input type="button" value="New Post" onclick="newPost(); return false;">
 		</fieldset>
 
-		<button id="form-delete" onclick="return deletePost()">Delete</button>
+		<button id="form-delete" onclick="return deletePost(); return false;">Delete</button>
 	</form>
 
 	<form method="post" enctype="multipart/form-data" target="" id="machine-post" class="admin">
 
-		<input type="number" name="id" value="<?php echo isset($loaded_post_obj) ? $loaded_post_obj->id : "" ; ?>" hidden>
+		<input type="number" name="id" value="<?php if (isset($loaded_post_obj)) echo $loaded_post_obj->id; else if(isset($post['id'])) echo $post['id']; else echo "";?>" hidden>
 
 		<fieldset>
 			<label for="form-name">Name of Device <?php if(isset($validator->erros['device_name'])) echo "<spand class='error'>*</span>"; ?></label>
@@ -508,7 +527,7 @@
 			<button onclick="addBundle(); return false;">Add Bundle</button>
 		</div>
 
-		<input type="submit" value="Save">
+		<input type="submit" value="Save" onsubmit="onSave();">
 
 	</form>
 
