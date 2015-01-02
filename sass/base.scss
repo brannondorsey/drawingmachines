@@ -77,12 +77,13 @@ header{
 
 	h1 {
 		margin-bottom: 0px;
+		font-weight: bold;
 	}
 	
 	#description {
 		font-size: $default_font_size - 2pt;
 		display: inline-block;
-		margin-top: 5px;
+		margin-top: 10px;
 	}
 
 	// #header-top-box {
@@ -92,7 +93,7 @@ header{
 	#header-bottom-box {
 		overflow: auto;
 		clear: both;
-		padding: 0px 5px 10px 0px;
+		padding: 0px 5px 0px 0px;
 		border-bottom: 1px solid $dark;
 	}
 
@@ -107,7 +108,7 @@ header{
 
 	nav.menu{
 
-		margin-top: -30px;
+		// margin-top: -30px;
 		float: right;
 
 		ul {
