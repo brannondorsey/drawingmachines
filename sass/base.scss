@@ -172,6 +172,10 @@ header{
 		}
 	}
 
+	.category-class:first-of-type {
+		border-top: none;
+	}
+
 	.category-box {
 
 		$margin: 10px;
@@ -202,7 +206,7 @@ header{
 			z-index: 2;
 			top: 0px;
 			left: 0px;
-			padding: 7px;
+			padding: 10px;
 		}
 
 		.hidden {

@@ -57,8 +57,6 @@
 	require_once "includes/header.php";
 	require_once "includes/menu.php";
 
-	var_dump($category_obj);
-
 ?>
 
 <div class="content category-layout">

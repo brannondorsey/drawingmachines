@@ -106,6 +106,8 @@ header {
   padding-bottom: 20px; }
   .categories-layout .category-class .category-class-name {
     margin: 8px; }
+.categories-layout .category-class:first-of-type {
+  border-top: none; }
 .categories-layout .category-box {
   color: black;
   border: 2px solid black;
@@ -128,7 +130,7 @@ header {
     z-index: 2;
     top: 0px;
     left: 0px;
-    padding: 7px; }
+    padding: 10px; }
   .categories-layout .category-box .hidden {
     display: none; }
   .categories-layout .category-box .image-fade {

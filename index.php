@@ -47,6 +47,25 @@
 		}
 	}
 
+	function sub_class_text_hack($class_name) {
+		$sub_text = "";
+		switch (strtolower($class_name)) {
+			case 'plotters':
+				$sub_text = ' [Automated drawing output]';
+				break;
+			case 'virtual images':
+				$sub_text = ' [Shadows or projected images for tracing]';
+				break;
+			case 'delineators':
+				$sub_text = ' [Directly trace from life]';
+				break;
+			case 'coordinate translators':
+				$sub_text = ' [Point-by-point translation from life]';
+				break;	
+		}
+		return $sub_text;
+	}
+
 	require_once "includes/header.php";
 	require_once "includes/menu.php";
 ?>
@@ -61,12 +80,21 @@
 </script>
 
 <div class="content categories-layout">
-	<h3 style="margin-top: 0;">Browse by category</h3>
 	<?php 
+
+	if (isset($class_names[0]) &&
+		isset($class_names[1])) {
+
+		// swap second to last category
+		$tmp = $class_names[0];
+		$class_names[0] = $class_names[1];
+		$class_names[1] = $tmp;
+	}
+	
 	for($i = 0; $i < count($class_names); $i++): 
 		$class = $class_names[$i];?>
 	<div class="category-class">
-		<p class="category-class-name"><?php echo $class?></p>
+		<p class="category-class-name"><?php echo $class . sub_class_text_hack($class)?></p>
 		<?php
 		for ($j = 0; $j < count($categories[$class]); $j++):
 			$category_obj = $categories[$class][$j];
