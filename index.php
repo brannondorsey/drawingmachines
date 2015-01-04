@@ -6,7 +6,8 @@
 				"id,
   				category,
   				class,
-  				description";
+  				description,
+  				short_description";
 
   	//setup the API
   	$category_api = new API("localhost", 
@@ -53,7 +54,8 @@
 <script>
 	$(document).ready(function(){
 		$('.category-box').on('mouseout mouseover', function(evt){
-			// $(this).find('.category-name').toggleClass('hidden');
+			$(this).find('.category-short-description').toggleClass('hidden');
+			$(this).find('img').toggleClass('image-fade');
 		});
 	});
 </script>
@@ -67,14 +69,16 @@
 		<p class="category-class-name"><?php echo $class?></p>
 		<?php
 		for ($j = 0; $j < count($categories[$class]); $j++):
-			$categoryObj = $categories[$class][$j];
-			$image_safe_name = utf8_encode($categoryObj->category);
-			$image_safe_name = str_replace("/", "-", $categoryObj->category);
+			$category_obj = $categories[$class][$j];
+			$image_safe_name = utf8_encode($category_obj->category);
+			$image_safe_name = str_replace("/", "-", $category_obj->category);
 			$image_file = "images/category/thumbnail/" . $image_safe_name . " Thumb.png"?>
-		<a href="category.php?id=<?php echo $categoryObj->id?>">
+		<a href="category.php?id=<?php echo $category_obj->id?>">
 			<div class="category-box">
-				<div class="category-name">&nbsp<?php echo $categoryObj->category ?></div>
 				<img src="<?php echo $image_file?>">
+				<div class="category-name">&nbsp<?php echo $category_obj->category ?></div>
+				<div class="category-short-description hidden"><?php echo $category_obj->short_description ?></div>
+				
 			</div>
 		</a>
 	<?php endfor; ?>

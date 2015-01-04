@@ -176,6 +176,7 @@ header{
 
 		$margin: 10px;
 
+		color: $dark;
 		border: 2px solid $dark;
 		width: ($body-width/4) - ($margin * 2) - 4;
 		height: ($body-width/4) - ($margin * 2) - 4;
@@ -196,8 +197,20 @@ header{
 			// text-align: center;
 		}
 
+		.category-short-description {
+			position: absolute;
+			z-index: 2;
+			top: 0px;
+			left: 0px;
+			padding: 7px;
+		}
+
 		.hidden {
 			display: none;
+		}
+
+		.image-fade {
+			opacity: .3;
 		}
 
 		img {

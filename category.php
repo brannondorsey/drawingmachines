@@ -8,7 +8,8 @@
 				"id,
   				category,
   				class,
-  				description";
+  				description,
+  				short_description";
 
   	//setup the API
   	$category_api = new API("localhost", 
@@ -55,6 +56,8 @@
 
 	require_once "includes/header.php";
 	require_once "includes/menu.php";
+
+	var_dump($category_obj);
 
 ?>
 
