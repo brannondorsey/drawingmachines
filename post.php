@@ -93,7 +93,7 @@
 		<?php for ($i = 0; $i < count($image_paths); $i++): //change $i < i to $i < $image_paths
 				$image_path = $image_paths[$i];
 		?>
-		<?php if ($i > 0):?>
+		<?php if (count($image_paths) > 1):?>
 		<img src="<?php echo $image_path ?>" class="thumbnail <?php if ($i == 0) echo "selected"?>">
 		<?php endif ?>
 	
