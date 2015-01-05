@@ -148,8 +148,10 @@
 
 		<p class="machine-sources">
 		<?php 
-		if (isset($machine->source)) echo $machine->source . "<br>";
-		if (isset($machine->source_line_2)) echo $machine->source_line_2;
+		$sources = "";
+		if (isset($machine->source)) $sources .= $machine->source;
+		if (isset($machine->source_line_2)) $sources .= "<br>" . $machine->source_line_2;
+		if ($sources != "") echo Michelf\Markdown::defaultTransform($sources);
 		?>
 		</p>
 
