@@ -100,7 +100,7 @@
 			$category_obj = $categories[$class][$j];
 			$image_safe_name = utf8_encode($category_obj->category);
 			$image_safe_name = str_replace("/", "-", $category_obj->category);
-			$image_safe_name = str_replace("ü", "u", $category_obj->category);
+			$image_safe_name = str_replace("ü", "u", $image_safe_name);
 			$image_file = "images/category/thumbnail/" . $image_safe_name . " Thumb.png"?>
 		<a href="category.php?id=<?php echo $category_obj->id?>">
 			<div class="category-box">
