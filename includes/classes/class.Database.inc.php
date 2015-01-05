@@ -23,6 +23,7 @@ class Database {
 		self::$user = $username;
 		self::$password = $password;
 		self::$mysqli = new mysqli(self::$host, self::$user, self::$password, self::$db);
+		self::$mysqli->set_charset('utf8');
 		return self::$mysqli->ping();
 	}
 

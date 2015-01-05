@@ -14,10 +14,11 @@
 	 	);
 
 	 	$results_obj = json_decode($api->get_json_from_assoc($query_array));
+
 	 	if (isset($results_obj->data[0])) {
 	 		
 	 		$machine = $results_obj->data[0];
-	 		//var_dump($machine);
+	 	
 	 		$images_dir = "images/machine/" . $machine->id . "/web";
 	 		$has_images = is_dir($images_dir);
 	 		
@@ -92,7 +93,9 @@
 		<?php for ($i = 0; $i < count($image_paths); $i++): //change $i < i to $i < $image_paths
 				$image_path = $image_paths[$i];
 		?>
+		<?php if ($i > 0):?>
 		<img src="<?php echo $image_path ?>" class="thumbnail <?php if ($i == 0) echo "selected"?>">
+		<?php endif ?>
 	
 		<?php endfor ?>
 	</div>
@@ -137,7 +140,7 @@
 
 	</div> 
 	<div class="post-content-container">
-		<h2><?php if (isset($machine->device_name)) echo $machine->device_name?></h2>
+		<h2><?php if (isset($machine->device_name)) echo htmlspecialchars($machine->device_name) ?></h2>
 		<h3><?php if (isset($machine->inventor)) echo $machine->inventor; if (isset($machine->inventor_line_2)) echo " & " . $machine->inventor_line_2; ?></h3>
 		<h4><?php if (isset($machine->circa)) echo "Circa "; if (isset($machine->year)) echo $machine->year?></h4>
 		
