@@ -109,6 +109,15 @@
 						}
 						$post['id'] = $id;
 					}
+
+					foreach($post as $post_key => $post_value) {
+						$post[$post_key] = str_replace('\\"', '"', $post[$post_key]);
+						$post[$post_key] = str_replace("\\'", "'", $post[$post_key]);
+					}
+
+					// if (isset($post["post_content"])) {
+					// 	$post["post_content"] = str_replace("\\r\\n", "<br>", $post["post_content"]);
+					// }
 				}				
 			}
 
@@ -463,7 +472,7 @@
 		<?php ?>
 		<fieldset style="width: 96.5%">
 			<label for="form-post-content">Post Content (in markdown) <?php if(isset($validator->errors['post_content'])) echo "<spand class='error'>*</span>"; ?></label>
-			<textarea id="form-post-content" name="post_content"><?php if(isset($post['post_content'])) echo $post['post_content']; else if(isset($loaded_post_obj)) echo $loaded_post_obj->post_content; ?></textarea>
+			<pre><textarea id="form-post-content" name="post_content"><?php if(isset($post['post_content'])) echo $post['post_content']; else if(isset($loaded_post_obj)) echo $loaded_post_obj->post_content; ?></textarea></pre>
 		</fieldset>
 
 		<fieldset>
