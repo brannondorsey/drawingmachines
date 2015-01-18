@@ -1,6 +1,10 @@
 @import 'vars';
 
 //defaults
+html, body {
+	height: 100%;
+}
+
 body{
 	width: $body_width;
 	color: $default_font_color;
@@ -13,7 +17,6 @@ body{
 p, ul, li {
 	line-height: 1.4;
 }
-
 
 //links
 a, a:visited{ 
@@ -153,6 +156,14 @@ header{
 //content
 .content{
 	padding: 20px 0px;
+	margin-bottom: -($footer_height); 
+	min-height: 100%;
+}
+
+.content:after {
+	content: "";
+  	display: block;
+  	height: $footer_height;
 }
 
 //categories page stuffs
@@ -566,7 +577,9 @@ form.admin{
 //footer
 
 footer {
+	
 	width: 100%;
+	height: $footer_height;
 	padding-bottom: 40px;
 	border-top: 1px solid $dark;
 	font-size: $footer_font_size;
