@@ -141,7 +141,7 @@
 	</div> 
 	<div class="post-content-container">
 		<h2><?php if (isset($machine->device_name)) echo htmlspecialchars($machine->device_name) ?></h2>
-		<h3><?php if (isset($machine->inventor)) echo $machine->inventor; if (isset($machine->inventor_line_2)) echo " & " . $machine->inventor_line_2; ?></h3>
+		<h3><?php if (isset($machine->inventor)) echo $machine->inventor; if (isset($machine->inventor_line_2)) echo " " . $machine->inventor_line_2; ?></h3>
 		<h4><?php if (isset($machine->circa)) echo "Circa "; if (isset($machine->year)) echo $machine->year?></h4>
 		
 		<p><?php if (isset($machine->post_content)) echo Michelf\Markdown::defaultTransform($machine->post_content) ?></p>
