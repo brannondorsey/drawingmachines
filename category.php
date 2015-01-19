@@ -52,7 +52,7 @@
 	if ($category_obj == NULL) header( 'Location: ' . $HOSTNAME);
 
 	$image_safe_name = str_replace("/", "-", $category_obj->category);
-	$image_safe_name = str_replace("ü", "u", $category_obj->category);
+	$image_safe_name = str_replace("ü", "u", $image_safe_name);
 	$image_file = "images/category/thumbnail/" . $image_safe_name . " Thumb.png";
 
 	require_once "includes/header.php";
