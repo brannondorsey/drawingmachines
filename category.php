@@ -1,10 +1,10 @@
-<?php 
+<?php
 	require_once "includes/classes/class.API.inc.php";
 	require_once "includes/config.php";
 	require_once "includes/helpers.php";
 	require_once "includes/classes/markdown/Markdown.inc.php";
 
-	$category_columns = 
+	$category_columns =
 				"id,
   				category,
   				class,
@@ -12,15 +12,15 @@
   				short_description";
 
   	//setup the API
-  	$category_api = new API("localhost", 
-  				   $DATABASE, 
-  				   "categories", 
-  				   $DATABASE_USER, 
+  	$category_api = new API("localhost",
+  				   $DATABASE,
+  				   "categories",
+  				   $DATABASE_USER,
   				   $DATABASE_PASSWORD);
 
   	$category_api->setup($category_columns);
   	$category_api->set_default_order("class");
-  	
+
   	$category_obj = NULL;
   	$machine_results = NULL;
 
@@ -58,7 +58,6 @@
 	require_once "includes/menu.php";
 
 ?>
-
 <div class="content category-layout">
 	<h3><?php echo $category_obj->category ?></h3>
 	<div class="category">
@@ -70,10 +69,12 @@
 	<div class="machine-results-container">
 		<?php foreach($machine_results as $machine):?>
 		<div class="result" data-id="<?php echo $machine->id?>">
+			<a href="post.php?id=<?php echo $machine->id ?>" style="display: block;">
 			<img src="<?php echo get_machine_thumbnail($machine)?>">
 			<h3><?php if (isset($machine->device_name)) echo $machine->device_name?></h3>
 			<h4><?php if (isset($machine->inventor)) echo $machine->inventor?></h4>
 			<h4><?php if (isset($machine->circa)) echo "Circa "; if (isset($machine->year)) echo $machine->year?></h4>
+			</a>
 		</div>
 		<?php endforeach ?>
 		<p>Click <a href="results.php?category=<?php echo $category_obj->category?>&exact=true">here</a>

@@ -412,7 +412,7 @@ header{
 
 .result {
 
-	cursor: pointer;
+	// cursor: pointer;
 	overflow: auto;
 	$image_size: 100px;
 	width: 60%;
@@ -425,7 +425,6 @@ header{
 		border: 2px solid $dark;
 		float: left;
 		margin-right: 20px;
-
 	}
 
 	h2 {
