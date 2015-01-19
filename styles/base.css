@@ -231,6 +231,7 @@ header {
     float: right; }
 
 .result {
+  cursor: pointer;
   overflow: auto;
   width: 60%;
   margin: 20px auto;

@@ -38,7 +38,7 @@
 		require_once "includes/database_connect.php";
 
 		$query_array = array(
-			'category' => $category_obj->category,
+			'category' => Database::clean($category_obj->category),
 			'order_by' => 'year',
 			'limit' => 10);
 
@@ -52,12 +52,20 @@
 	if ($category_obj == NULL) header( 'Location: ' . $HOSTNAME);
 
 	$image_safe_name = str_replace("/", "-", $category_obj->category);
+	$image_safe_name = str_replace("ü", "u", $category_obj->category);
 	$image_file = "images/category/thumbnail/" . $image_safe_name . " Thumb.png";
 
 	require_once "includes/header.php";
 	require_once "includes/menu.php";
 
 ?>
+<script>
+	$(document).ready(function(){
+		$('.result').click(function(){
+			window.location.href = <?php echo "'" . $HOSTNAME . "/post.php?id=" . "'"?> + $(this).attr('data-id');
+		});
+	});
+</script>
 <div class="content category-layout">
 	<h3><?php echo $category_obj->category ?></h3>
 	<div class="category">
@@ -69,12 +77,10 @@
 	<div class="machine-results-container">
 		<?php foreach($machine_results as $machine):?>
 		<div class="result" data-id="<?php echo $machine->id?>">
-			<a href="post.php?id=<?php echo $machine->id ?>" style="display: block;">
 			<img src="<?php echo get_machine_thumbnail($machine)?>">
 			<h3><?php if (isset($machine->device_name)) echo $machine->device_name?></h3>
 			<h4><?php if (isset($machine->inventor)) echo $machine->inventor?></h4>
 			<h4><?php if (isset($machine->circa)) echo "Circa "; if (isset($machine->year)) echo $machine->year?></h4>
-			</a>
 		</div>
 		<?php endforeach ?>
 		<p>Click <a href="results.php?category=<?php echo $category_obj->category?>&exact=true">here</a>
