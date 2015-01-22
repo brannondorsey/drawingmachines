@@ -8,6 +8,7 @@
 		<nav class="menu">
 		  <ul>
 		    <li><a href="index.php">Home</a></li>
+		    <li><a href="find.php">Find</a></li>
 		    <li><a href="about.php">About/FAQ</a></li>
 		  </ul>
 		</nav>
