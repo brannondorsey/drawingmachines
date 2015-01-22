@@ -170,14 +170,16 @@ header{
 		clear: both;
 		border-top: 1px solid $dark;
 		padding-bottom: 20px;
-		
+		padding-top: 10px;
+
 		.category-class-name {
-			margin: 8px;
+			margin: 8px 8px 8px 0px;
 		}
 	}
 
 	.category-class:first-of-type {
 		border-top: none;
+		padding-top: 0px;
 	}
 
 	.category-box {
