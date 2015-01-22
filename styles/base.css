@@ -1,10 +1,9 @@
 body {
-  width: 960px;
   color: black;
   font-family: "Helvetica Neue", Helvetica, sans-serif;
   font-size: 12pt;
   font-weight: 300;
-  margin: 0px auto; }
+  margin: 0; }
 
 p, ul, li {
   line-height: 1.4; }
@@ -43,19 +42,20 @@ button:hover, input[type="submit"]:hover, input[type="button"]:hover {
 
 header {
   margin-bottom: 0px;
-  padding-top: 10px;
+  padding-top: 5px;
   padding-bottom: 0px;
-  position: relative; }
+  position: relative;
+  background-color: black;
+  color: white; }
   header a, header a:visited {
-    color: black;
+    color: white;
     margin-bottom: 10px; }
   header h1, header h2 {
     margin-bottom: 0px;
     font-weight: bold; }
   header #description {
     font-size: 10pt;
-    display: inline-block;
-    margin-top: 10px; }
+    display: inline-block; }
   header #header-bottom-box {
     overflow: auto;
     clear: both;
@@ -72,7 +72,8 @@ header {
     header nav.menu ul {
       margin: 0;
       padding: 0;
-      list-style: none; }
+      list-style: none;
+      margin-top: -5px; }
     header nav.menu li {
       display: inline-block; }
     header nav.menu a {
@@ -98,6 +99,10 @@ header {
 
 .content {
   padding: 20px 0px; }
+
+.site-width {
+  width: 960px;
+  margin: 0px auto; }
 
 .categories-layout .category-class {
   overflow: auto;

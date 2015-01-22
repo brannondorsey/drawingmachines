@@ -1,9 +1,9 @@
 <header>
     
-    <div id="header-top-box">
-	    <h1><a href="index.php">DRAWINGMACHINES.ORG</a></h1>
+    <div id="header-top-box" class="site-width">
+	    <h1><a href="index.php">DrawingMachines.org</a></h1>
 	</div>
-	<div id="header-bottom-box">
+	<div id="header-bottom-box" class="site-width">
 		<span id="description"><?php echo $site_description; ?></span>
 		<nav class="menu">
 		  <ul>
@@ -17,3 +17,4 @@
 		</form>-->
 	</div>
 </header>
+<div class="site-width">

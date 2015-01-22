@@ -94,7 +94,7 @@
 	for($i = 0; $i < count($class_names); $i++): 
 		$class = $class_names[$i];?>
 	<div class="category-class">
-		<p class="category-class-name"><?php echo $class . sub_class_text_hack($class)?></p>
+		<p class="category-class-name"><strong><?php echo strtoupper($class) ?></strong>&nbsp<?php echo sub_class_text_hack($class)?></p>
 		<?php
 		for ($j = 0; $j < count($categories[$class]); $j++):
 			$category_obj = $categories[$class][$j];

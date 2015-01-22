@@ -2,7 +2,7 @@
 <html lang="en">
 
   <head>
-    <?php $site_description = "An archive of optical/mechanical/automated drawing machines/devices/aids from 1425 to the present"; ?>
+    <?php $site_description = "An archive of optical/mechanical/automated drawing machines/devices/aids"; ?>
     <title>Drawing Machines</title>
     <meta charset="utf-8" />
     <meta name="description" content="<?php echo $site_description; ?>" />

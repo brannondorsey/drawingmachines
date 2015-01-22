@@ -19,6 +19,6 @@
 	    	</a>
 	    </span>
 	  </footer>
-
+	</div> <!-- .site-width -->
 	</body>
 </html>
