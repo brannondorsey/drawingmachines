@@ -29,6 +29,7 @@
 	  	// $api->set_searchable("column_name, column_name, etc...");
 	  	// $api->set_default_search_order("column_name");
 	  	$api->set_pretty_print(true);
+	  	$api->set_default_output_number(500);
 
 	  	//sanitize the contents of $_GET to insure that 
 	  	//malicious strings cannot disrupt your database

@@ -115,7 +115,7 @@
 		?>
 		<div>
 			<h4>Category</h4>
-			<span><a href="results.php?category=<?php echo $machine->category?>&limit=10&order_by=date"><?php echo $machine->category?></a></span>
+			<span><a href="results.php?category=<?php echo $machine->category?>&order_by=date&exact=true"><?php echo $machine->category?></a></span>
 		</div>
 		<?php endif ?>
 
@@ -131,7 +131,7 @@
 
 				foreach ($tags_array as $tag) { 
 			?>
-			<span><a href="results.php?tags=<?php echo $tag?>&limit=10&order_by=date"><?php echo $tag;?></a></span>
+			<span><a href="results.php?tags=<?php echo $tag?>&order_by=date"><?php echo $tag;?></a></span>
 			<?php
 				}
 			endif ?>
