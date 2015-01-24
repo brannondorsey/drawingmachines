@@ -40,7 +40,8 @@
 		$query_array = array(
 			'category' => Database::clean($category_obj->category),
 			'order_by' => 'year',
-			'limit' => 10);
+			'limit' => 10,
+			'exact' => 'true');
 
 	 	$results = json_decode($api->get_json_from_assoc($query_array));
 

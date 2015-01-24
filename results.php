@@ -13,11 +13,16 @@
 
 	 	if (isset($results_obj->data)) {
 
-	 		$limit = (isset($query_array['limit'])) ? (int) $query_array['limit'] : 0;
-	 		$numb_results = max(count($results_obj->data), $limit);
-	 		$total_numb_results = total_numb_results($query_array, $api); //gives total number of pages
-		  $total_pages = ceil($total_numb_results / $numb_results); //calculates total number of pages
-		  if ($page > $total_pages) $page = $total_pages; //sets page to max page if page it exceeds it
+	 		// filter DB results "by hand" to ensure that category and tags lookups were
+	 		// not too relaxed. (e.g. a search for "Mirror" should not return "blah blah (Mirror)")
+	 		$results_obj->data = filter_results($results_obj->data, $query_array, 'tags');
+	 		$results_obj->data = filter_results($results_obj->data, $query_array, 'category');
+
+	 		// $limit = (isset($query_array['limit'])) ? (int) $query_array['limit'] : 0;
+	 		// $numb_results = max(count($results_obj->data), $limit);
+	 		// $total_numb_results = total_numb_results($query_array, $api); //gives total number of pages
+		  // $total_pages = ceil($total_numb_results / $numb_results); //calculates total number of pages
+		  // if ($page > $total_pages) $page = $total_pages; //sets page to max page if page it exceeds it
 
 	 	} else {
 	 		//error or no results found
@@ -28,6 +33,35 @@
 	 require_once "includes/header.php";
 	 require_once "includes/menu.php";
 	 require_once "includes/helpers.php";
+
+	// Reduces relaxed search results
+	// Use for category and tag columns only
+	function filter_results($results, $query_array, $column_name) {
+	 	
+	 	if (!isset($query_array[$column_name])) {
+	 		return $results;
+	 	}
+
+	 	$results_to_return = array();
+	 	$query_string = preg_quote($query_array[$column_name]);
+	 	$regex_prepend = ($column_name == 'tags') ? '/#' : '/^';
+	 	// note: when column name is != 'tags' the second preg_match() the second 
+	 	$regex_append = ($column_name == 'tags') ? ',/i' : '$/i'; 
+
+	 	foreach ($results as $result) {	
+	 		
+	 		if (!isset($result->$column_name)) break;
+
+ 			if (preg_match($regex_prepend . $query_string . $regex_append, $result->$column_name) == 1) {
+ 				$results_to_return[] = $result;
+ 			} else if ($column_name == 'tags' && preg_match($regex_prepend . $query_string . "$/i", $result->$column_name) == 1) {
+ 				$results_to_return[] = $result;
+ 			}
+ 		}
+
+ 		return $results_to_return;
+	}
+
 ?>
 <script>
 	$(document).ready(function(){
@@ -38,11 +72,16 @@
 </script>
 
 <div class="content results-container">
-	<h2>Showing results for "<?php
+	<?php if (!isset($results_obj->data) || count($results_obj->data) == 0): ?>
+	<h2>No results found</h2>
+	<?php elseif (isset($query_array["tags"]) || isset($query_array["category"])): ?>
+	<h2>
+		Showing results for "<?php
 		if (isset($query_array["tags"])) echo $query_array["tags"];
 		else if (isset($query_array["category"])) echo $query_array["category"];
-		else if (isset($query_array["search"])) echo $query_array["search"];
-	?>"</h2>
+		?>"
+	</h2>
+	<?php endif ?>
 	<?php
 	if (isset($results_obj->data)) :
 		foreach($results_obj->data as $machine):
@@ -56,6 +95,7 @@
 	<?php endforeach;
 	endif;?>
 
+	<!-- The below pagination section is now longer user, however it remains here for reference-->
 	<?php if (isset($total_pages)) { ?>
     <div class="pagination-container">
         <?php if ($page > 1 &&

@@ -55,7 +55,8 @@ header {
     font-weight: bold; }
   header #description {
     font-size: 10pt;
-    display: inline-block; }
+    display: inline-block;
+    margin-top: 5px; }
   header #header-bottom-box {
     overflow: auto;
     clear: both;
