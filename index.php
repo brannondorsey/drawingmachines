@@ -103,7 +103,7 @@
 			$image_safe_name = str_replace("ü", "u", $image_safe_name);
 			$image_file = "images/category/thumbnail/" . $image_safe_name . " Thumb.png"?>
 		<a href="category.php?id=<?php echo $category_obj->id?>">
-			<div class="category-box">
+			<div class="category-box" <?php if ($j % 4 == 0) echo 'style="margin-left: 0px"'?>>
 				<img src="<?php echo $image_file?>">
 				<div class="category-name">&nbsp<?php echo $category_obj->category ?></div>
 				<div class="category-short-description hidden"><?php echo $category_obj->short_description ?></div>

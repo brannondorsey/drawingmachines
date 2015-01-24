@@ -189,8 +189,8 @@ header{
 
 		color: $dark;
 		border: 2px solid $dark;
-		width: ($body-width/4) - ($margin * 2) - 4;
-		height: ($body-width/4) - ($margin * 2) - 4;
+		width: ($body-width/4) - ($margin * 2) - 2;
+		height: ($body-width/4) - ($margin * 2) - 2;
 		margin: $margin;
 		float: left;
 		position: relative;
